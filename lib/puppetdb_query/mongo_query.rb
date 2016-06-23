@@ -11,14 +11,7 @@ module PuppetDBQuery
     def nodes(query)
       puts "starting query"
       collection = @connection[:nodes]
-      puts "found: #{collection.find(query).count}"
-      result = []
-      cursor = collection.find(query, fields: ['_id'])
-      cursor.each do |document|
-        result << document[:_id]
-      end
-      pp result
-      result
+      collection.find(query).limit(999).batch_size(999).projection(_id: 1).map { |k| k[:_id] }
     end
 
     def facts(query, facts)
@@ -27,7 +20,7 @@ module PuppetDBQuery
       #fields = facts << ':_id'
       #pp "fields: #{fields}"
       collection = @connection[:nodes]
-      puts "found: #{collection.find(query).count}"
+      #puts "found: #{collection.find(query).count}"
       result = {}
       # cursor = collection.find(query, {:fields => ["os"]}).to_a
       cursor = collection.find(query, :fields => facts)

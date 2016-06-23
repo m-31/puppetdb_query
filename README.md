@@ -30,13 +30,13 @@ MONGO_OPTIONS = { database: 'puppetdb', user: 'ops', password: 'very secret' }
 
 pm = PuppetDBQuery::MongoQuery.new(MONGO_HOSTS, MONGO_OPTIONS)
 pm.nodes({processorcount: '4', lvm_support: true})
-pm.facts({processorcount: '4', lvm_support: true}}, ["lhotse_group", "lhotse_server_type"])
+pm.facts({processorcount: '4', lvm_support: true}, ["macaddress", "operatingsystem"])
 
 mongo = PuppetDBQuery::ToMongo.new
 query = mongo.query("processorcount='4' and lvm_support=true")
 pp query
 pm.nodes(query)
-pm.facts(query, ["lhotse_group", "lhotse_server_type"])
+pm.facts(query, ["macaddress", "operatingsystem"])
 ```
 
 ## Development
