@@ -9,27 +9,18 @@ module PuppetDBQuery
     end
 
     def nodes(query)
-      puts "starting query"
       collection = @connection[:nodes]
       collection.find(query).limit(999).batch_size(999).projection(_id: 1).map { |k| k[:_id] }
     end
 
     def facts(query, facts)
-      puts "starting query"
-      pp query
-      #fields = facts << ':_id'
-      #pp "fields: #{fields}"
+      fields = Hash[facts.collect { |fact| [fact.to_sym, 1] }]
       collection = @connection[:nodes]
-      #puts "found: #{collection.find(query).count}"
       result = {}
-      # cursor = collection.find(query, {:fields => ["os"]}).to_a
-      cursor = collection.find(query, :fields => facts)
-      cursor.each do |document|
-        values = {}
-        facts.each { |fact| values[fact] = document[fact] }
-        result[document['_id']] = values
+      collection.find(query).limit(999).batch_size(999).projection(fields).each do |values|
+        id = values.delete('_id')
+        result[id] = values
       end
-      pp result
       result
     end
   end
