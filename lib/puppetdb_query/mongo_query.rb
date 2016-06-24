@@ -1,11 +1,11 @@
-require 'pp'
+require 'mongo'
 
 module PuppetDBQuery
   class MongoQuery
     attr_reader :connection
 
     def initialize(hosts, options)
-      @connection = Mongo::Client.new(hosts, options)
+      @connection = ::Mongo::Client.new(hosts, options)
     end
 
     def nodes(query)
