@@ -23,7 +23,7 @@ module PuppetDBQuery
       end
     end
 
-    def facts(node)
+    def node_facts(node)
       @lock.synchronize do
         uri = URI.parse("#{@url}/#{node}/facts")
         http = Net::HTTP.new(uri.host, uri.port)
