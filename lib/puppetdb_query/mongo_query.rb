@@ -23,5 +23,16 @@ module PuppetDBQuery
       end
       result
     end
+
+    def node_facts(node)
+      collection = @connection[:nodes]
+      result = collection.find(_id: node).limit(999).batch_size(999).to_a.first
+      result.delete("_id")
+      result
+    end
+
+    def import(node, facts)
+      collection = @connection[:nodes].find_one_and_replace({ _id: node}, facts, upsert: true)
+    end
   end
 end

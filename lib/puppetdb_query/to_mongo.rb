@@ -1,6 +1,7 @@
 require_relative "parser"
 
 module PuppetDBQuery
+  # convert puppetdb query into mongodb query
   class ToMongo
     def query(string)
       parser = Parser.new(string)
