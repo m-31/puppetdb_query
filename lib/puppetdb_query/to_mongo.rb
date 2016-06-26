@@ -14,6 +14,10 @@ module PuppetDBQuery
     def query_term(term)
       if term.is_a?(Symbol)
         return term.to_s
+      elsif term.is_a?(Fixnum)
+        return term.to_s
+      elsif term.is_a?(TrueClass)
+        return term.to_s
       elsif !term.is_a?(Term)
         return term
       end
@@ -26,7 +30,9 @@ module PuppetDBQuery
       when :equal
         { term.args[0] => term.args[1] }
       when :not_equal
-        { term.args[0] => { :$ne => query_term(term.args[1]) } }
+        { term.args[0] => { :$ne => term.args[1].to_s } }
+      when :match
+        { term.args[0] => { :$regex => term.args[1].to_s } }
       else
         raise "can't handle operator '#{term.operator}' yet"
       end

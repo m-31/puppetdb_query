@@ -4,6 +4,7 @@
 /Gemfile.lock
 /*.gem
 /tester.rb
+/test/
 /_yardoc/
 /coverage/
 /doc/
