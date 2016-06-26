@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-  spec.post_install_message = "  Spring comes, and the grass grows by itself."
+  spec.post_install_message = "  Sitting quietly, doing nothing, spring comes, and grass grows by itself."
 
   spec.add_dependency             "mongo"
   spec.add_development_dependency "rake"

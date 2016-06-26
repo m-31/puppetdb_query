@@ -57,7 +57,7 @@ module PuppetDBQuery
 
     # delete node data for given node name
     def node_delete(node)
-      connection[collection_name].find({ _id: node}).delete_one
+      connection[collection_name].find({ _id: node }).delete_one
     end
   end
 end
