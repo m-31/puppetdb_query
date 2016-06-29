@@ -84,7 +84,7 @@ module PuppetDBQuery
         # we expect an infix operator
         operator = get_operator
         debug("we found operator '#{operator}'") if operator
-        if operator.nil? || operator.prefix? || operator.priority <= priority
+        if operator.nil? || operator.prefix? || operator.priority < priority
           debug("'#{operator}' is prefex '#{operator && operator.prefix?}' or has less priority #{operator && operator.priority} than #{priority}")
           debug("get_next_infix_terms: #{term}")
           return term

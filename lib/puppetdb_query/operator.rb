@@ -26,6 +26,10 @@ module PuppetDBQuery
       !infix
     end
 
+    def ==(o)
+      o.class == self.class && o.symbol == symbol
+    end
+
     def to_s
       @string
     end
