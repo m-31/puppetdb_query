@@ -4,8 +4,7 @@ module PuppetDBQuery
   # convert puppetdb query into mongodb query
   class ToMongo
     def query(string)
-      parser = Parser.new(string)
-      terms = parser.read_expression()
+      terms = Parser.parse(string)
       mongo_query = query_term(terms[0])
       puts mongo_query.inspect
       mongo_query

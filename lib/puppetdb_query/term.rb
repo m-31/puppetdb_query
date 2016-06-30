@@ -10,6 +10,11 @@ module PuppetDBQuery
 
     def add(*arg)
       @args += arg
+      self
+    end
+
+    def ==(o)
+      o.class == self.class && o.operator == operator && o.args == args
     end
 
     def to_s

@@ -23,7 +23,7 @@ if $0 == __FILE__
   puts query
 
   parser = PuppetDBQuery::Parser.new(query)
-  term = parser.read_expression
+  term = parser.parse
   pp term
 
   mongo = PuppetDBQuery::ToMongo.new

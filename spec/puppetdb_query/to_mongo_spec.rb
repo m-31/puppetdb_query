@@ -20,7 +20,6 @@ describe PuppetDBQuery::ToMongo do
     [ "server_type=zoo or server_type='mesos-magr') and group!='infrastructure-ci'",
       {:$or=>[{:server_type=>:zoo}, {:server_type=>"mesos-magr"}]}
     ],
-    # following should fail
     [ "server_type~'mesos-magr' and group='ops-ci' and operatingsystemmajrelease=7 and vmtest_vm!=true and disable_puppet!=true and puppet_artifact_verion!=NO_VERSION_CHECK",
       {:$and=>[{:server_type=>{:$regex=>"mesos-magr"}}, {:group=>"ops-ci"}, {:operatingsystemmajrelease=>7}, {:vmtest_vm=>{:$ne=>"true"}}, {:disable_puppet=>{:$ne=>"true"}}, {:puppet_artifact_verion=>{:$ne=>"NO_VERSION_CHECK"}}]}
     ],

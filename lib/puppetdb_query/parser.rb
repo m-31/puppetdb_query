@@ -3,38 +3,45 @@ require_relative "term"
 require_relative "tokenizer"
 
 module PuppetDBQuery
+  # parse a puppetdb query string into #PuppetDBQuery::Term s
   class Parser
-    AND = Operator.new(:and, true, 100, 2)
-    OR = Operator.new(:or, true, 90, 2)
-    NOT = Operator.new(:not, false, 1, 1, 1)
-    EQUAL = Operator.new(:equal, true, 200, 2, 2)
-    NOT_EQUAL = Operator.new(:not_equal, true, 200, 2, 2)
-    MATCH = Operator.new(:match, true, 200, 2, 2)
-
-    OPERATORS = {
-      AND.symbol   =>  AND,
-      OR.symbol    =>  OR,
-      NOT.symbol   =>  NOT,
-      EQUAL.symbol =>  EQUAL,
-      NOT_EQUAL.symbol =>  NOT_EQUAL,
-      MATCH.symbol =>  MATCH,
-    }
-
-    attr_reader :position
-    attr_reader :symbols
-
-    def initialize(query)
-      @symbols = Tokenizer.symbols(query)
-      @position = 0
+    def self.parse(puppetdb_query)
+      Parser.new.parse(puppetdb_query)
     end
 
-    def read_expression
+    # these are the operators we understand
+    AND       = Operator.new(:and,       true, 100, 2)
+    OR        = Operator.new(:or,        true,  90, 2)
+    NOT       = Operator.new(:not,       false,  1, 1, 1)
+    EQUAL     = Operator.new(:equal,     true, 200, 2, 2)
+    NOT_EQUAL = Operator.new(:not_equal, true, 200, 2, 2)
+    MATCH     = Operator.new(:match,     true, 200, 2, 2)
+
+    # map certain symbols (we get them from a tokenizer) to our operators
+    OPERATORS = {
+      AND.symbol       =>  AND,
+      OR.symbol        =>  OR,
+      NOT.symbol       =>  NOT,
+      EQUAL.symbol     =>  EQUAL,
+      NOT_EQUAL.symbol =>  NOT_EQUAL,
+      MATCH.symbol     =>  MATCH,
+    }
+
+    attr_reader :symbols  # array of symbols
+    attr_reader :position # current parsing position in array of symbols
+
+    # parse query and get resulting array of PuppetDBQuery::Term s
+    def parse(query)
+      @symbols = Tokenizer.symbols(query)
+      @position = 0
       r = []
       while !empty?
         r << read_maximal_term(0)
       end
       r
     end
+
+    private
 
     # Reads next maximal term. The following input doesn't make the term ore complete.
     # Respects the priority of operators by comparing it to the given value.
@@ -163,7 +170,7 @@ if $0 == __FILE__
   puts query
 
   parser = PuppetDBQuery::Parser.new(query)
-  tree = parser.read_expression
+  tree = parser.parse
   pp tree
 end
 

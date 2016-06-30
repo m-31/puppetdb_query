@@ -106,6 +106,7 @@ module PuppetDBQuery
     end
 
     def read_quoted
+      # FIXME read escaped characters
       debug "read quoted"
       skip_whitespace
       q = text[position]
