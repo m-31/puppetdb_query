@@ -41,7 +41,9 @@ module PuppetDBQuery
     def read_maximal_term(priority)
       return nil if empty?
       first = read_minimal_term
-      add_next_infix_terms(priority, first)
+      term = add_next_infix_terms(priority, first)
+      debug("read maximal term: #{term}")
+      return term
     end
 
     # Read next following term. This is a complete term but some infix operator
@@ -74,6 +76,7 @@ module PuppetDBQuery
         debug("atom found: #{token}")
         term = token
       end
+      debug("read minimal term: #{term}")
       return term
     end
 
@@ -84,7 +87,7 @@ module PuppetDBQuery
         # we expect an infix operator
         operator = get_operator
         debug("we found operator '#{operator}'") if operator
-        if operator.nil? || operator.prefix? || operator.priority < priority
+        if operator.nil? || operator.prefix? || operator.priority <= priority
           debug("'#{operator}' is prefex '#{operator && operator.prefix?}' or has less priority #{operator && operator.priority} than #{priority}")
           debug("get_next_infix_terms: #{term}")
           return term
@@ -94,6 +97,7 @@ module PuppetDBQuery
           read_token
           new_term = read_maximal_term(operator.priority)
           error("to few arguments for operator '#{operator}'") if new_term.nil?
+          puts "is '#{old_operator}' == '#{operator}' : #{old_operator == operator}"
           if old_operator == operator
             if operator.maximum && term.args.size + 1 >= operator.maximum
               raise "to much arguments for operator '#{operator}'"
@@ -114,6 +118,7 @@ module PuppetDBQuery
           also_new_term.add(new_term)
           term = also_new_term
         end
+        old_operator = operator
       end
     end
 
