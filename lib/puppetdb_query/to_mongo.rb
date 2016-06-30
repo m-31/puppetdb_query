@@ -6,7 +6,9 @@ module PuppetDBQuery
     def query(string)
       parser = Parser.new(string)
       terms = parser.read_expression()
-      return query_term(terms[0])
+      mongo_query = query_term(terms[0])
+      puts mongo_query.inspect
+      mongo_query
     end
 
     private
@@ -15,11 +17,11 @@ module PuppetDBQuery
       if term.is_a?(Symbol)
         return term.to_s
       elsif term.is_a?(Fixnum)
-        return term.to_s
+        return "'#{term.to_s}'"
       elsif term.is_a?(TrueClass)
         return term.to_s
       elsif !term.is_a?(Term)
-        return term
+        return "'#{term.to_s}'"
       end
       terms = term.args.map { |t| query_term(t) }
       case term.operator.symbol
@@ -28,7 +30,7 @@ module PuppetDBQuery
       when :or
         { :$or => terms }
       when :equal
-        { term.args[0] => term.args[1] }
+        { term.args[0] => term.args[1].to_s }
       when :not_equal
         { term.args[0] => { :$ne => term.args[1].to_s } }
       when :match

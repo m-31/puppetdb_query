@@ -97,7 +97,7 @@ module PuppetDBQuery
           read_token
           new_term = read_maximal_term(operator.priority)
           error("to few arguments for operator '#{operator}'") if new_term.nil?
-          puts "is '#{old_operator}' == '#{operator}' : #{old_operator == operator}"
+          debug "is '#{old_operator}' == '#{operator}' : #{old_operator == operator}"
           if old_operator == operator
             if operator.maximum && term.args.size + 1 >= operator.maximum
               raise "to much arguments for operator '#{operator}'"
