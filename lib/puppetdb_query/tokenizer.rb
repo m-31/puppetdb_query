@@ -1,6 +1,10 @@
-module PuppetDBQuery
+require_relative "logging"
 
+module PuppetDBQuery
+  # tokenize puppetdb queries
+  # rubocop:disable Metrics/ClassLength
   class Tokenizer
+    include Logging
 
     SINGLE_CHAR_TO_TOKEN = {
       "!" => :not,
@@ -13,7 +17,7 @@ module PuppetDBQuery
       ">" => :greater,
       "~" => :match,
       "," => :comma,
-    }
+    }.freeze
 
     DOUBLE_CHAR_TO_TOKEN = {
       "!=" => :not_equal,
@@ -21,7 +25,7 @@ module PuppetDBQuery
       "~>" => :match_array,
       "<=" => :less_or_equal,
       ">=" => :greater_or_equal,
-    }
+    }.freeze
 
     STRING_TO_TOKEN = {
       "not"   => :not,
@@ -32,10 +36,10 @@ module PuppetDBQuery
       "null"  => :null,
       "true"  => :true,
       "false" => :false,
-    }
+    }.freeze
 
-    LANGUAGE_TOKENS = SINGLE_CHAR_TO_TOKEN.merge(DOUBLE_CHAR_TO_TOKEN).merge(STRING_TO_TOKEN)
-    LANGUAGE_STRINGS = LANGUAGE_TOKENS.invert
+    LANGUAGE_TOKENS = SINGLE_CHAR_TO_TOKEN.merge(DOUBLE_CHAR_TO_TOKEN).merge(STRING_TO_TOKEN).freeze
+    LANGUAGE_STRINGS = LANGUAGE_TOKENS.invert.freeze
 
     def self.symbols(query)
       r = []
@@ -47,11 +51,11 @@ module PuppetDBQuery
     end
 
     def self.query(symbols)
-      symbols.map{ |v| symbol_to_string(v) }.join(" ")
+      symbols.map { |v| symbol_to_string(v) }.join(" ")
     end
 
-    def self.symbol_to_string(symbol)
-      (LANGUAGE_STRINGS[symbol] || (symbol.is_a?(Symbol) ? symbol.to_s : nil) || symbol.inspect).to_s
+    def self.symbol_to_string(s)
+      (LANGUAGE_STRINGS[s] || (s.is_a?(Symbol) ? s.to_s : nil) || s.inspect).to_s
     end
 
     def self.idem(query)
@@ -79,7 +83,7 @@ module PuppetDBQuery
     private
 
     def read_token
-      debug "read token"
+      logger.debug "read token"
       skip_whitespace
       return nil if empty?
       s = text[position, 2]
@@ -106,50 +110,63 @@ module PuppetDBQuery
     end
 
     def read_quoted
-      # FIXME read escaped characters
-      debug "read quoted"
+      logger.debug "read quoted"
       skip_whitespace
       q = text[position]
       increase
       r = ""
       while !empty? && (c = text[position]) != q
+=begin
+        if c == "\\"
+          increase
+          c = text[position] unless empty?
+          case c
+          when 'r'
+            c = "\r"
+          when 'n'
+            c = "\n"
+          when '\''
+            c = "\\"
+          end
+        end
+=end
         r << c
         increase
       end
       error("I expected '#{q}' but I got '#{c}'") if c != q
       increase
-      debug "resulting symbol: '#{r}'"
-      return r
+      logger.debug "resulting string: '#{r}'"
+      r
     end
 
     def read_symbol
-      debug "read symbol"
+      logger.debug "read symbol"
       skip_whitespace
       r = ""
       while !empty? && (c = text[position]) =~ /[-a-zA-Z_0-9]/
         r << c
         increase
       end
-      debug "resulting symbol: '#{r}'"
-      return r.to_sym
+      logger.debug "resulting symbol: '#{r}'"
+      r.to_sym
     end
 
     def read_number
-      debug "read number"
+      logger.debug "read number"
       skip_whitespace
       r = ""
       while !empty? && (c = text[position]) =~ /[-0-9\.E]/
         r << c
         increase
       end
-      debug "resulting symbol: '#{r}'"
-      return Integer(r)
+      logger.debug "resulting number: '#{r}'"
+      Integer(r)
     rescue
-      return Float(r)
+      Float(r)
     end
 
     def skip_whitespace
-      #puts "skip whitespace"
+      # puts "skip whitespace"
       return if empty?
       while !empty? && text[position] =~ /\s/
         increase
@@ -157,17 +174,13 @@ module PuppetDBQuery
     end
 
     def increase
-      debug "increase"
+      # logger.debug "increase"
       @position += 1
-      debug position
+      # logger.debug position
     end
 
     def error(message)
       raise "tokenizing query failed\n#{message}\n\n#{text}\n#{' ' * position}^"
-    end
-
-    def debug(*message)
-      # puts "    #{message}"
     end
   end
 end

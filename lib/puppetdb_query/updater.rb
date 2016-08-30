@@ -1,6 +1,10 @@
+require_relative "logging"
+
 module PuppetDBQuery
   # update nodes data from source to destination
   class Updater
+    include Logging
+
     attr_reader :source
     attr_reader :destination
 
@@ -20,7 +24,7 @@ module PuppetDBQuery
         begin
           destination.node_update(node, source.node_facts(node))
         rescue
-          STDERR.puts $!  # TODO logger
+          logging.error $!
         end
       end
     end
@@ -37,7 +41,7 @@ module PuppetDBQuery
         begin
           destination.node_update(node, facts)
         rescue
-          STDERR.puts $!
+          logging.error $!
         end
       end
     end
@@ -53,7 +57,7 @@ module PuppetDBQuery
         begin
           destination.node_update(node, source.node_facts(node))
         rescue
-          STDERR.puts $!  # TODO logger
+          logging.error $!
         end
       end
       modified.size

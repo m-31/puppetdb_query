@@ -1,5 +1,5 @@
 module PuppetDBQuery
-  # access nodes and their facts from mongo databse
+  # access nodes and their facts from mongo database
   class MongoDB
     attr_reader :connection
     attr_reader :collection_name
@@ -17,7 +17,7 @@ module PuppetDBQuery
       collection.find(query).batch_size(999).projection(_id: 1).map { |k| k[:_id] }
     end
 
-    # get nodes and ther facts that fulfill given mongodb query
+    # get nodes and their facts that fulfill given mongodb query
     def query_facts(query, facts)
       fields = Hash[facts.collect { |fact| [fact.to_sym, 1] }]
       collection = connection[collection_name]
@@ -45,19 +45,20 @@ module PuppetDBQuery
 
     # update or insert facts for given node name
     def node_update(node, facts)
-      connection[collection_name].find({ _id: node}).replace_one(facts, upsert: true)
+      connection[collection_name].find(_id: node).replace_one(facts, upsert: true)
     rescue ::Mongo::Error::OperationFailure => e
       # mongodb doesn't support keys with a dot
       # see https://docs.mongodb.com/manual/reference/limits/#Restrictions-on-Field-Names
       # as a dirty workaround we delete the document and insert it ;-)
-      fail e unless e.message =~ /The dotted field / # The dotted field .. in .. is not valid for storage. (57)
-      connection[collection_name].find({ _id: node}).delete_one
+      # The dotted field .. in .. is not valid for storage. (57)
+      raise e unless e.message =~ /The dotted field /
+      connection[collection_name].find(_id: node).delete_one
       connection[collection_name].insert_one(facts.merge(_id: node))
     end
 
     # delete node data for given node name
     def node_delete(node)
-      connection[collection_name].find({ _id: node }).delete_one
+      connection[collection_name].find(_id: node).delete_one
     end
   end
 end

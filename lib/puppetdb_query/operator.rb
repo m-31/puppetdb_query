@@ -1,6 +1,7 @@
 require_relative "tokenizer"
 
 module PuppetDBQuery
+  # operator with priority and representation information
   class Operator
     attr_reader :symbol
     attr_reader :infix
@@ -26,8 +27,8 @@ module PuppetDBQuery
       !infix
     end
 
-    def ==(o)
-      o.class == self.class && o.symbol == symbol
+    def ==(other)
+      other.class == self.class && other.symbol == symbol
     end
 
     def to_s
@@ -35,4 +36,3 @@ module PuppetDBQuery
     end
   end
 end
-
