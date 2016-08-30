@@ -1,0 +1,106 @@
+# This yaml file describes which files are excluded in rubocop run.
+# It can be in the project home directory or in the $HOME folder.
+
+require: rubocop-rspec
+
+# Common configuration.
+AllCops:
+  Include:
+    - 'lib/**/'
+    - 'exe/*'
+
+  Exclude:
+    - 'scripts/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'bundle/**/*'
+    - 'local-gems/**/*'
+    - '**/*.sh'
+    - '**/Gemfile'
+    - 'tester.rb'
+    - 'test/**/*'
+
+# --- XXXLength-Section --------------------------------------------------------------------
+# too long lines, methods and classes are annoying,
+LineLength:
+  Enabled: true
+  Max: 100
+
+MethodLength:
+  Enabled: true
+  Max: 35
+
+Metrics/AbcSize:
+  Max: 40
+
+ClassLength:
+  Enabled: true
+  Max: 140
+
+# --- Style Cops - Section -----------------------------------------------------------------
+# Don't be so dogmatic about Hash-Style! Both are fine for us
+HashSyntax:
+  Enabled: true
+
+# From upcoming Ruby 2.x on there is no need for this anymore, so why bothering now?
+Encoding:
+  Enabled: false
+
+# Disables following message: Documentation: Missing top-level class documentation comment.
+Documentation:
+  Enabled: true
+
+# Filename-Conventions are a thing that we decide by ourselves (at the moment ;-))
+FileName:
+  Enabled: true
+
+# this 3-digit thing for portnumbers? oh, come on!
+NumericLiterals:
+  Enabled: false
+
+# ok, one should avoid global vars, but from time to time we need them
+Style/GlobalVars:
+  Enabled: true
+
+# I myself would always prefer the %r() Style for RegExp because it is more save and readable,
+# others the classic style, even if the have to escape slashes.
+# I think this can be ignored as a style-offense
+Style/RegexpLiteral:
+  Enabled: true
+
+Style/AlignParameters:
+  EnforcedStyle: "with_fixed_indentation"
+
+Style/BracesAroundHashParameters:
+  EnforcedStyle: "context_dependent"
+
+Style/EachWithObject:
+  Enabled: false
+
+# we now the special global variables by heart
+Style/SpecialGlobalVars:
+  Enabled: false
+
+# we don't care about quoting style
+Style/StringLiterals:
+  Enabled: false
+
+# --- Complexity - Section -----------------------------------------------------------------
+# as old McCabe says:
+#
+# Cyclomatic Complexity 	Risk Evaluation...
+# 1-10 	                    A simple module without much risk
+# 11-20 	                A more complex module with moderate risk
+# 21-50 	                A complex module of high risk
+# 51 and greater 	        An untestable program of very high risk
+CyclomaticComplexity:
+  Max: 10
+
+# Lint-Section -----------------------------------------------------------------------------
+# what is soooo bad about blablubb.match /..../ compared to blablubb.match(/..../)?
+Lint/AmbiguousRegexpLiteral:
+  Enabled: true
+
+# for easier line moving
+Style/TrailingCommaInLiteral:
+  Enabled: false

@@ -1,8 +1,18 @@
-require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+require 'rake'
 
-RSpec::Core::RakeTask.new
+require "rubocop/rake_task"
+require 'rspec/core/rake_task'
 
-task :default => :spec
-task :test => :spec
+desc "Run RuboCop on the lib directory"
+RuboCop::RakeTask.new(:rubocop) do |task|
+  task.formatters = ["fuubar"]
+  task.options = ["-D"]
+  task.fail_on_error = true
+end
+
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = 'spec/**/*_spec.rb'
+end
+
+task :default => ["spec", "rubocop"]
 
