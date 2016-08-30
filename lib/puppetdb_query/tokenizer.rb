@@ -5,6 +5,7 @@ module PuppetDBQuery
   # rubocop:disable Metrics/ClassLength
   class Tokenizer
     include Logging
+    include Enumerable
 
     SINGLE_CHAR_TO_TOKEN = {
       "!" => :not,
@@ -80,6 +81,12 @@ module PuppetDBQuery
       position >= text.size
     end
 
+    def each(&block)
+      until empty?
+        yield next_token
+      end
+    end
+
     private
 
     def read_token
@@ -116,7 +123,6 @@ module PuppetDBQuery
       increase
       r = ""
       while !empty? && (c = text[position]) != q
-=begin
         if c == "\\"
           increase
           c = text[position] unless empty?
@@ -129,7 +135,6 @@ module PuppetDBQuery
             c = "\\"
           end
         end
-=end
         r << c
         increase
       end
