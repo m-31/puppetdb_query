@@ -1,4 +1,6 @@
+sudo: false
 language: ruby
+cache: bundler
 rvm:
   - 1.9.3
   - 2.0.0
@@ -7,10 +9,5 @@ rvm:
   - jruby-19mode
   - rbx
 
-before_install:
-  # There is a bug in travis. When using system ruby, bundler is not
-  # installed and causes the default install action to fail.
-  - gem install bundler
-
 script:
-  - bundle exec rake
+  - TESTOPTS=-v bundle exec rake
