@@ -1,7 +1,10 @@
 require "spec_helper"
 
+# rubocop:disable Style/SpaceInsideBrackets,Style/MultilineArrayBraceLayout
+# rubocop:disable Style/MultilineMethodCallIndentation,Style/RedundantParentheses
+# rubocop:disable Style/ClosingParenthesisIndentation
 describe PuppetDBQuery::Parser do
-  DATA = [
+  PARSER_DATA = [
     [ 'hostname=\'puppetdb-mike-217922\'',
       [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:hostname, "puppetdb-mike-217922")]
     ],
@@ -27,11 +30,11 @@ describe PuppetDBQuery::Parser do
          ))
       ]
     ],
-  ]
+  ].freeze
 
-  DATA.each do |q, a|
+  PARSER_DATA.each do |q, a|
     it "translates correctly #{q.inspect}" do
       expect(subject.parse(q)).to eq(a)
-     end
+    end
   end
 end

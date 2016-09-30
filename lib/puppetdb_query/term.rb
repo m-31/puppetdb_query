@@ -1,4 +1,5 @@
 module PuppetDBQuery
+  # represent a term containing an operator and arguments
   class Term
     attr_reader :operator
     attr_reader :args
