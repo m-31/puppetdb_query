@@ -23,7 +23,7 @@ module PuppetDBQuery
       # rubocop:disable Style/GuardClause
       if term.is_a?(Symbol)
         return term.to_s
-      elsif term.is_a?(Fixnum)
+      elsif term.is_a?(Integer)
         return "'#{term}'"
       elsif term.is_a?(TrueClass)
         return term.to_s

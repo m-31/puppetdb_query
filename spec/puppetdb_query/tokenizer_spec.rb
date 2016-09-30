@@ -39,6 +39,6 @@ describe PuppetDBQuery::Tokenizer do
       it "into tokens" do
         expect(subject.map { |n| n }).to eq(a)
       end
-     end
+    end
   end
 end

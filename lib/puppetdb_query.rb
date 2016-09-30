@@ -9,7 +9,6 @@ require_relative "puppetdb_query/to_mongo"
 require_relative "puppetdb_query/updater"
 require_relative "puppetdb_query/version"
 
+# use puppetdb query language to ask a mongodb for node facts
 module PuppetDBQuery
-
 end
-

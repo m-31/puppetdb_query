@@ -45,9 +45,7 @@ module PuppetDBQuery
     def self.symbols(query)
       r = []
       tokenizer = Tokenizer.new(query)
-      while !tokenizer.empty?
-        r << tokenizer.next_token
-      end
+      r << tokenizer.next_token until tokenizer.empty?
       r
     end
 
@@ -81,10 +79,8 @@ module PuppetDBQuery
       position >= text.size
     end
 
-    def each(&block)
-      until empty?
-        yield next_token
-      end
+    def each
+      yield next_token until empty?
     end
 
     private
@@ -171,11 +167,9 @@ module PuppetDBQuery
     end
 
     def skip_whitespace
-      # puts "skip whitespace"
+      # logger.debug "skip whitespace"
       return if empty?
-      while !empty? && text[position] =~ /\s/
-        increase
-      end
+      increase until empty? || text[position] !~ /\s/
     end
 
     def increase

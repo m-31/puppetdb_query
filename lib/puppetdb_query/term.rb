@@ -14,13 +14,13 @@ module PuppetDBQuery
       self
     end
 
-    def ==(o)
-      o.class == self.class && o.operator == operator && o.args == args
+    def ==(other)
+      other.class == self.class && other.operator == operator && other.args == args
     end
 
     def to_s
       if operator.prefix?
-        "#{operator}(#{args.join(", ")})"
+        "#{operator}(#{args.join(', ')})"
       elsif operator.infix?
         "(#{args.join(" #{operator} ")})"
       else
