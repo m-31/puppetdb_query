@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency             "mongo"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rubocop"
+  spec.add_development_dependency "rubocop", "0.43.0" # matches with .rubocop.yml
   spec.add_development_dependency "easy_diff"
-  spec.add_development_dependency "ruby-puppetdb"    #, running with "=1.5.3"
-  spec.add_development_dependency "puppet"           #, running "=3.8.7"
+  spec.add_development_dependency "ruby-puppetdb"     #, running with "=1.5.3"
+  spec.add_development_dependency "puppet"            #, running "=3.8.7"
 end
