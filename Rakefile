@@ -7,6 +7,7 @@ desc "Run RuboCop on the lib directory"
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.formatters = ["fuubar"]
   task.options = ["-D"]
+  task.options = task.options + ["--fail-level", "E"] if RUBY_VERSION =~ /^1\./
   task.fail_on_error = true
 end
 

@@ -18,7 +18,7 @@ module PuppetDBQuery
 
     private
 
-    # rubocop:disable Metrics/PerceivedComplexity 8
+    # rubocop:disable Metrics/PerceivedComplexity
     def query_term(term)
       # rubocop:disable Style/GuardClause
       if term.is_a?(Symbol)
