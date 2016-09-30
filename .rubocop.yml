@@ -1,8 +1,6 @@
 # This yaml file describes which files are excluded in rubocop run.
 # It can be in the project home directory or in the $HOME folder.
 
-require: rubocop-rspec
-
 # Common configuration.
 AllCops:
   Include:
