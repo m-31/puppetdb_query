@@ -8,6 +8,8 @@ This approach can reduce the load on your puppet database enormously and speed u
 The puppet database schema is not designed for complicated queries on numerous nodes. Here we provide
 an implementation for storing and querying node facts in a mongodb.  
 
+Currently the implementation supports only puppetdb api V 3.
+
 ## Installation
 
 Add this line to your application's Gemfile:
