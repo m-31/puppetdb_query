@@ -1,9 +1,17 @@
+require_relative "logging"
+
 module PuppetDBQuery
   # access nodes and their facts from mongo database
   class MongoDB
+    include Logging
     attr_reader :connection
     attr_reader :collection_name
 
+    # initialize access to mongodb
+    #
+    # You might want to adjust the logging level, for example:
+    #   ::Mongo::Logger.logger.level = logger.level
+    #
     # @param connection  mongodb connection, should already be switched to correct database
     # @param collection  symbol for collection that contains nodes
     def initialize(connection, collection = :nodes)
@@ -40,6 +48,17 @@ module PuppetDBQuery
       collection = connection[collection_name]
       result = collection.find(_id: node).limit(999).batch_size(999).to_a.first
       result.delete("_id") if result
+      result
+    end
+
+    # get all nodes and their facts
+    def facts
+      collection = connection[collection_name]
+      result = {}
+      collection.find.batch_size(999).each do |values|
+        id = values.delete('_id')
+        result[id] = values
+      end
       result
     end
 

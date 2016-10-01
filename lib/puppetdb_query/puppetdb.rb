@@ -4,8 +4,8 @@ require 'json'
 module PuppetDBQuery
   # access puppetdb data
   class PuppetDB
-    NODES = "/v3/nodes".freeze
-    FACTS = "/v3/facts".freeze
+    NODES = "/v4/nodes".freeze
+    FACTS = "/v4/facts".freeze
 
     def initialize(host = HOST, port = 443, protocol = "https", nodes = NODES, facts = FACTS)
       @nodes_url = "#{protocol}://#{host}:#{port}#{nodes}"
@@ -22,8 +22,8 @@ module PuppetDBQuery
         request = Net::HTTP::Get.new(uri.request_uri)
         request['Accept'] = "application/json"
         response = http.request(request)
-        # TODO: in '/v4/nodes' we must take 'certname'
-        JSON.parse(response.body).map { |data| data['name'] }
+        # TODO: in '/v3/nodes' we must take 'name'
+        JSON.parse(response.body).map { |data| data['certname'] }
       end
     end
 
@@ -40,8 +40,8 @@ module PuppetDBQuery
         response = http.request(request)
         json = JSON.parse(response.body)
         json.delete_if { |data| Time.iso8601(data["facts_timestamp"]) < ts }
-        # TODO: in '/v4/nodes' we must take 'certname'
-        json.delete_if { |data| data["facts_timestamp"] }.map { |data| data['name'] }
+        # TODO: in '/v3/nodes' we must take 'name'
+        json.delete_if { |data| data["facts_timestamp"] }.map { |data| data['certname'] }
       end
     end
 
