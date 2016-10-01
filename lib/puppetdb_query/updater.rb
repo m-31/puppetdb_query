@@ -13,6 +13,9 @@ module PuppetDBQuery
       @destination = destination
     end
 
+    # update by deleting missing nodes and iterating over all nodes and
+    # update or insert facts for each one
+    #
     # 335.6 seconds: update time for 1561 nodes
     def update
       source_nodes = source.nodes
@@ -29,6 +32,9 @@ module PuppetDBQuery
       end
     end
 
+    # update by deleting missing nodes and get a complete map of nodes with facts
+    # and update or insert facts for each one
+    #
     # 166.4 seconds: update time for 1561 nodes
     def update2
       source_nodes = source.nodes
@@ -46,6 +52,10 @@ module PuppetDBQuery
       end
     end
 
+    # update by deleting missing nodes and getting a list of nodes
+    # with changed facts, iterate over them and update or insert facts for each one
+    #
+    # update time depends extremly on the number of changed nodes
     def update3(last_update_timestamp)
       source_nodes = source.nodes
       destination_nodes = destination.nodes
