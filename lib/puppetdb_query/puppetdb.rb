@@ -74,7 +74,7 @@ module PuppetDBQuery
 
     def get_json(url, timeout)
       @lock.synchronize do
-        logger.info "get json from #{url}"
+        logger.info "  get json from #{url}"
         uri = URI.parse(url)
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = uri.scheme == 'https'
@@ -82,7 +82,7 @@ module PuppetDBQuery
         request = Net::HTTP::Get.new(uri.request_uri)
         request['Accept'] = "application/json"
         response = http.request(request)
-        logger.info "  got #{response.body.size} characters from #{url}"
+        logger.info "    got #{response.body.size} characters from #{url}"
         JSON.parse(response.body)
       end
     end

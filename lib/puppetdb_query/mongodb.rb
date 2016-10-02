@@ -89,25 +89,12 @@ module PuppetDBQuery
     end
 
     # update node properties
-    def node_properties_update(new_node_properties, ts_begin)
+    def node_properties_update(new_node_properties)
       collection = connection[node_properties_collection]
       old_names = collection.find.batch_size(999).projection(_id: 1).map { |k| k[:_id] }
       delete = old_names - new_node_properties.keys
       collection.insert_many(new_node_properties.map { |k, v| v.dup.tap { v[:_id] = k } })
       collection.delete_many(_id: { '$in' => delete })
-      ts_end = Time.now
-      connection[meta_collection].find_one_and_update(
-        {},
-        {
-          '$set' => {
-            last_node_properties_update: {
-              ts_begin: ts_begin,
-              ts_end:   ts_end
-            }
-          }
-        },
-        { upsert: true }
-      )
     end
 
     # update or insert timestamps for given fact update method
@@ -122,6 +109,22 @@ module PuppetDBQuery
               method:   method
             },
             method => {
+              ts_begin: ts_begin,
+              ts_end:   ts_end
+            }
+          }
+        },
+        { upsert: true }
+      )
+    end
+
+    # update or insert timestamps for node_properties_update
+    def meta_node_properties_update(ts_begin, ts_end)
+      connection[meta_collection].find_one_and_update(
+        {},
+        {
+          '$set' => {
+            last_node_properties_update: {
               ts_begin: ts_begin,
               ts_end:   ts_end
             }
