@@ -31,9 +31,7 @@ describe PuppetDBQuery::Parser do
       ]
     ],
   ].freeze
-
-# i hate rubocop
-
+  
   PARSER_DATA.each do |q, a|
     it "translates correctly #{q.inspect}" do
       expect(subject.parse(q)).to eq(a)
