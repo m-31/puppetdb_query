@@ -1,10 +1,10 @@
 # puppetdb_query - query puppetdb data from other sources
 
 Just store and update your puppet facts also in another database and query nodes or facts from that other database.
+This can speed up your queries enormously and reduce the load on your puppet database.
 
 ## General
 
-This approach can reduce the load on your puppet database enormously and speed up the query time.
 The puppet database schema is not designed for complicated queries on numerous nodes. Here we provide
 an implementation for storing and querying node facts in a mongodb.  
 
