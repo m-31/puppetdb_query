@@ -24,8 +24,8 @@ module PuppetDBQuery
       api_nodes.map { |data| data['certname'] }
     end
 
-    # get array of node names
-    def nodes_properties
+    # get hash of node update properties
+    def node_properties
       result = {}
       api_nodes.each do |data|
         next if data['deactivated']
@@ -41,7 +41,7 @@ module PuppetDBQuery
     # get all nodes that have updated facts
     def nodes_update_facts_since(timestamp)
       ts = (timestamp.is_a?(String) ? Time.iso8601(ts) : timestamp)
-      nodes_properties.delete_if do |_k, data|
+      node_properties.delete_if do |_k, data|
         # TODO: in '/v3/nodes' we must take 'facts_timestamp'
         !data["facts-timestamp"] || Time.iso8601(data["facts-timestamp"]) < ts
       end.keys

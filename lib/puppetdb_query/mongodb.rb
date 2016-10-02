@@ -8,7 +8,7 @@ module PuppetDBQuery
     include Logging
     attr_reader :connection
     attr_reader :nodes_collection
-    attr_reader :nodes_properties_collection
+    attr_reader :node_properties_collection
     attr_reader :meta_collection
 
     # initialize access to mongodb
@@ -18,12 +18,12 @@ module PuppetDBQuery
     #
     # @param connection        mongodb connection, should already be switched to correct database
     # @param nodes             symbol for collection that contains nodes with their facts
-    # @param nodes_properties  symbol for collection for nodes with their update timestamps
+    # @param node_properties   symbol for collection for nodes with their update timestamps
     # @param meta              symbol for collection with update metadata
-    def initialize(connection, nodes = :nodes, nodes_properties = :nodes_properties, meta = :meta)
+    def initialize(connection, nodes = :nodes, node_properties = :node_properties, meta = :meta)
       @connection = connection
       @nodes_collection = nodes
-      @nodes_propeties_collection = nodes_properties
+      @node_properties_collection = node_properties
       @meta_collection = meta
     end
 
@@ -90,12 +90,12 @@ module PuppetDBQuery
 
     # update node properties
     def node_properties_update(new_node_properties, ts_begin)
-      collection = connection[nodes_properties_collection]
+      collection = connection[node_properties_collection]
       old_names = collection.find.batch_size(999).projection(_id: 1).map { |k| k[:_id] }
       delete = old_names - new_node_properties.keys
-      collection.insert_many(nodes_properties.map { |k, v| v.dup.tap { v[:_id] = k } })
+      collection.insert_many(new_node_properties.map { |k, v| v.dup.tap { v[:_id] = k } })
       collection.delete_many(_id: { '$in' => delete })
-      ts_end = Time.iso8601(Time.now)
+      ts_end = Time.now
       connection[meta_collection].find_one_and_update(
         {},
         {
