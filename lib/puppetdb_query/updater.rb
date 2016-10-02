@@ -93,7 +93,8 @@ module PuppetDBQuery
       source_node_properties = source.node_properties
       destination.node_properties_update(source_node_properties)
       tse = Time.now
-      logger.info "update_node_properties updated #{source_node_properties.size} nodes in #{tse - tsb}"
+      logger.info "update_node_properties updated #{source_node_properties.size} nodes " \
+                  "in #{tse - tsb}"
       destination.meta_node_properties_update(tsb, tse)
     end
 
