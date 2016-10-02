@@ -1,6 +1,6 @@
 # puppetdb_query - query puppetdb data from other sources
 
-Just store and update your puppet facts also in another database and query nodes or facts analogously.
+Just store and update your puppet facts also in another database and query nodes or facts from that other database.
 
 ## General
 
