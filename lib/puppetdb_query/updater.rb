@@ -16,7 +16,7 @@ module PuppetDBQuery
     # update by deleting missing nodes and iterating over all nodes and
     # update or insert facts for each one
     #
-    # 335.6 seconds: update time for 1561 nodes
+    # mongo: 1598 nodes in 63.46 seconds
     def update1
       logger.info "update1 started (full update)"
       tsb = Time.now
@@ -40,7 +40,7 @@ module PuppetDBQuery
     # update by deleting missing nodes and get a complete map of nodes with facts
     # and update or insert facts for each one
     #
-    # 166.4 seconds: update time for 1561 nodes
+    # mongo: 1597 nodes in 35.31 seconds
     def update2
       logger.info "update2 started (full update)"
       tsb = Time.now
@@ -65,7 +65,7 @@ module PuppetDBQuery
     # update by deleting missing nodes and getting a list of nodes
     # with changed facts, iterate over them and update or insert facts for each one
     #
-    # update time depends extremly on the number of changed nodes
+    # mongo: 56 nodes in 2.62 seconds
     def update3(last_update_timestamp)
       logger.info "update3 started (incremental)"
       tsb = Time.now
@@ -87,6 +87,9 @@ module PuppetDBQuery
       destination.meta_fact_update("update3", tsb, tse) unless errors
     end
 
+    # update node update information
+    #
+    # mongo: 1602 nodes in 0.42 seconds
     def update_node_properties
       logger.info "update_node_properties started"
       tsb = Time.now
