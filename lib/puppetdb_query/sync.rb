@@ -16,6 +16,7 @@ module PuppetDBQuery
 
     def sync(minutes = 5, seconds = 10)
       logger.info "syncing puppetdb nodes and facts started"
+
       Timeout.timeout(60 * minutes - seconds) do
         updater = PuppetDBQuery::Updater.new(source, destination)
 

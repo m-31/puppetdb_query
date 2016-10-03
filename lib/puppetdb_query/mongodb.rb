@@ -51,10 +51,21 @@ module PuppetDBQuery
       collection.find.batch_size(999).projection(_id: 1).map { |k| k[:_id] }
     end
 
+    # get all nodes and their update dates
+    def node_properties
+      collection = connection[node_properties_collection]
+      result = {}
+      collection.find.batch_size(999).each do |values|
+        id = values.delete('_id')
+        result[id] = values
+      end
+      result
+    end
+
     # get facts for given node name
     def node_facts(node)
       collection = connection[nodes_collection]
-      result = collection.find(_id: node).limit(999).batch_size(999).to_a.first
+      result = collection.find(_id: node).limit(1).batch_size(1).to_a.first
       result.delete("_id") if result
       result
     end
@@ -67,6 +78,14 @@ module PuppetDBQuery
         id = values.delete('_id')
         result[id] = values
       end
+      result
+    end
+
+    # get meta informations about updates
+    def meta
+      collection = connection[meta_collection]
+      result = collection.find.first
+      result.delete(:_id)
       result
     end
 
@@ -93,7 +112,17 @@ module PuppetDBQuery
       collection = connection[node_properties_collection]
       old_names = collection.find.batch_size(999).projection(_id: 1).map { |k| k[:_id] }
       delete = old_names - new_node_properties.keys
-      collection.insert_many(new_node_properties.map { |k, v| v.dup.tap { v[:_id] = k } })
+      data = new_node_properties.map do |k, v|
+        {
+          replace_one:
+          {
+            filter: { _id: k },
+            replacement: v,
+            upsert: true
+          }
+        }
+      end
+      collection.bulk_write(data)
       collection.delete_many(_id: { '$in' => delete })
     end
 

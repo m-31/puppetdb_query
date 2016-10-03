@@ -13,29 +13,62 @@ You must simply establish a sync job to read the data from your puppetdb and wri
 Currently the implementation supports only puppetdb api V 4.
 
 ## Installation
+The example implementation uses a mongodb (version >= 3.2).
 
 Add this line to your application's Gemfile:
 
 ```ruby
 gem 'puppetdb_query'
+gem 'mongo', '>=2.2.0'
 ```
 
-And then execute:
+and then execute:
 
     $ bundle
 
 Or install it yourself as:
 
-    $ gem install puppetdb_query 
+    $ gem install puppetdb_query
+    $ gem install mongo 
 
-## Usage within program
+## Usage
+
+First you have to sync your puppetdb data with your mongodb.
+You can accomplish this by calling the following code every 5 minutes.
+
+```ruby
+#!/bin/ruby
+
+require 'mongo'
+require 'puppetdb_query'
+
+include PuppetDBQuery::Logging
+logger.level = Logger::INFO
+::Mongo::Logger.logger = logger
+
+begin
+  MONGO_HOSTS = ['puppetdb-mongo.example.com:27017']
+  MONGO_OPTIONS = { database: 'puppetdb', user: 'ops', password: 'very secret' }
+  connection = ::Mongo::Client.new(MONGO_HOSTS, MONGO_OPTIONS)
+  mongodb = PuppetDBQuery::MongoDB.new(connection)
+  puppetdb = PuppetDBQuery::PuppetDB.new('puppetdb-querynodes.example.com')
+
+  sync = PuppetDBQuery::Sync.new(puppetdb, mongodb)
+  sync.sync(5, 10)
+rescue
+  logger.error $!
+end
+```
+
+
+Now you can query nodes and facts like this:
 
 ```ruby
 require "mongo"
 require "puppetdb_query"
 require "pp"
 
-MONGO_HOSTS = ['mongo.myhost.org:27017']
+MONGO_HOSTS = ['puppetdb-mongo.example.com:27017']
 MONGO_OPTIONS = { database: 'puppetdb', user: 'ops', password: 'very secret' }
 
 pm = PuppetDBQuery::MongoQuery.new(MONGO_HOSTS, MONGO_OPTIONS)
