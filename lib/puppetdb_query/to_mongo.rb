@@ -37,6 +37,12 @@ module PuppetDBQuery
         { :$and => terms }
       when :or
         { :$or => terms }
+      when :not
+        # $not currently (<=2.5.1) only supports negating equality operators.
+        # so you can do { field: { $not : { [$eq,$gt,$lt,...] } }
+        # but there is no way to negate an entire expression.
+        # see https://jira.mongodb.org/browse/SERVER-10708
+        { :$nor => terms }
       when :equal
         { term.args[0] => term.args[1].to_s }
       when :not_equal
