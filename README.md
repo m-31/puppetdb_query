@@ -24,7 +24,7 @@ gem 'mongo', '>=2.2.0'
 
 and then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
