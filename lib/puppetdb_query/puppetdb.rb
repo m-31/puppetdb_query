@@ -42,8 +42,8 @@ module PuppetDBQuery
     def nodes_update_facts_since(timestamp)
       ts = (timestamp.is_a?(String) ? Time.iso8601(ts) : timestamp)
       node_properties.delete_if do |_k, data|
-        # TODO: in '/v3/nodes' we must take 'facts_timestamp'
-        !data["facts-timestamp"] || Time.iso8601(data["facts-timestamp"]) < ts
+        # TODO: in '/v3/nodes' we must take 'facts-timestamp'
+        !data["facts_timestamp"] || Time.iso8601(data["facts_timestamp"]) < ts
       end.keys
     end
 
