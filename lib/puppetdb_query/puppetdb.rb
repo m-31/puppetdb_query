@@ -8,8 +8,8 @@ module PuppetDBQuery
   class PuppetDB
     include Logging
 
-    NODES = "/v4/nodes".freeze
-    FACTS = "/v4/facts".freeze
+    NODES = "/pdb/query/v4/nodes".freeze
+    FACTS = "/pdb/query/v4/facts".freeze
 
     def initialize(host = HOST, port = 443, protocol = "https", nodes = NODES, facts = FACTS)
       @nodes_url = "#{protocol}://#{host}:#{port}#{nodes}"
@@ -20,7 +20,7 @@ module PuppetDBQuery
     # get array of node names
     def nodes
       # TODO: perhaps we have to ignore entries without "deactivated": null?
-      # TODO: in '/v3/nodes' we must take 'name'
+      # in '/v3/nodes' we must take 'name'
       api_nodes.map { |data| data['certname'] }
     end
 
@@ -29,7 +29,7 @@ module PuppetDBQuery
       result = {}
       api_nodes.each do |data|
         next if data['deactivated']
-        # TODO: in '/v3/nodes' we must take 'name'
+        # in '/v3/nodes' we must take 'name'
         name = data['certname']
         values = data.dup
         %w(deactivated certname).each { |key| values.delete(key) }
@@ -42,7 +42,7 @@ module PuppetDBQuery
     def nodes_update_facts_since(timestamp)
       ts = (timestamp.is_a?(String) ? Time.iso8601(ts) : timestamp)
       node_properties.delete_if do |_k, data|
-        # TODO: in '/v3/nodes' we must take 'facts-timestamp'
+        # in '/v3/nodes' we must take 'facts-timestamp'
         !data["facts_timestamp"] || Time.iso8601(data["facts_timestamp"]) < ts
       end.keys
     end

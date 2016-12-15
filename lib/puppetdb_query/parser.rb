@@ -14,12 +14,12 @@ module PuppetDBQuery
 
     # these are the operators we understand
     # rubocop:disable Style/ExtraSpacing
-    AND       = Operator.new(:and,       true, 100, 2)
-    OR        = Operator.new(:or,        true,  90, 2)
-    NOT       = Operator.new(:not,       false,  1, 1, 1)
-    EQUAL     = Operator.new(:equal,     true, 200, 2, 2)
-    NOT_EQUAL = Operator.new(:not_equal, true, 200, 2, 2)
-    MATCH     = Operator.new(:match,     true, 200, 2, 2)
+    AND       = Operator.new(:and,       true,  100, 2)
+    OR        = Operator.new(:or,        true,   90, 2)
+    NOT       = Operator.new(:not,       false, 150, 1, 1)
+    EQUAL     = Operator.new(:equal,     true,  200, 2, 2)
+    NOT_EQUAL = Operator.new(:not_equal, true,  200, 2, 2)
+    MATCH     = Operator.new(:match,     true,  200, 2, 2)
     # rubocop:enable Style/ExtraSpacing
 
     # map certain symbols (we get them from a tokenizer) to our operators
