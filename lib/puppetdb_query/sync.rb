@@ -14,8 +14,8 @@ module PuppetDBQuery
       @destination = destination
     end
 
-    def sync(minutes = 5, seconds = 10)
-      logger.info "syncing puppetdb nodes and facts started"
+    def sync(minutes = 60, seconds = 10)
+      logger.info "syncing puppetdb nodes and facts started, running #{minutes} minutes"
 
       Timeout.timeout(60 * minutes - seconds) do
         updater = PuppetDBQuery::Updater.new(source, destination)
@@ -32,6 +32,9 @@ module PuppetDBQuery
             ts = Time.now
             updater.update3(timestamp - 2)
             timestamp = ts
+          rescue Timeout::Error
+            logger.info "syncing puppetdb nodes: now our time is up, we finsh"
+            return
           rescue
             logger.error $!
           end
