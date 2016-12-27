@@ -2,39 +2,40 @@ require_relative "logging"
 
 module PuppetDBQuery
   # tokenize puppetdb queries
+  # FIXME: distinguish between language tokens and other tokens
   # rubocop:disable Metrics/ClassLength
   class Tokenizer
     include Logging
     include Enumerable
 
     SINGLE_CHAR_TO_TOKEN = {
-      "!" => :not,
-      "=" => :equal,
-      "(" => :begin,
-      ")" => :end,
-      "[" => :list_begin,
-      "]" => :list_end,
-      "<" => :less,
-      ">" => :greater,
-      "~" => :match,
-      "," => :comma,
+      "!" => :_not,
+      "=" => :_equal,
+      "(" => :_begin,
+      ")" => :_end,
+      "[" => :_list_begin,
+      "]" => :_list_end,
+      "<" => :_less,
+      ">" => :_greater,
+      "~" => :_match,
+      "," => :_comma,
     }.freeze
 
     DOUBLE_CHAR_TO_TOKEN = {
-      "!=" => :not_equal,
-      "!~" => :not_match,
-      "~>" => :match_array,
-      "<=" => :less_or_equal,
-      ">=" => :greater_or_equal,
+      "!=" => :_not_equal,
+      "!~" => :_not_match,
+      "~>" => :_match_array,
+      "<=" => :_less_or_equal,
+      ">=" => :_greater_or_equal,
     }.freeze
 
     STRING_TO_TOKEN = {
-      "not"   => :not,
-      "or"    => :or,
-      "and"   => :and,
-      "in"    => :in,
-      "is"    => :is,
-      "null"  => :null,
+      "not"   => :_not,
+      "or"    => :_or,
+      "and"   => :_and,
+      "in"    => :_in,
+      "is"    => :_is,
+      "null"  => :_null,
       "true"  => :true,
       "false" => :false,
     }.freeze
@@ -93,11 +94,13 @@ module PuppetDBQuery
       if DOUBLE_CHAR_TO_TOKEN.include?(s)
         increase
         increase
+        logger.debug "  resulting symbol: #{DOUBLE_CHAR_TO_TOKEN[s]}"
         return DOUBLE_CHAR_TO_TOKEN[s]
       end
       c = text[position]
       if SINGLE_CHAR_TO_TOKEN.include?(c)
         increase
+        logger.debug "  resulting symbol: #{SINGLE_CHAR_TO_TOKEN[c]}"
         return SINGLE_CHAR_TO_TOKEN[c]
       end
       case c
@@ -113,9 +116,9 @@ module PuppetDBQuery
     end
 
     def read_quoted
-      logger.debug "read quoted"
+      logger.debug "  read quoted"
       skip_whitespace
-      q = text[position]
+      q = text[position] # quote character
       increase
       r = ""
       while !empty? && (c = text[position]) != q
@@ -136,31 +139,33 @@ module PuppetDBQuery
       end
       error("I expected '#{q}' but I got '#{c}'") if c != q
       increase
-      logger.debug "resulting string: '#{r}'"
+      logger.debug "  resulting string: '#{r}'"
       r
     end
 
     def read_symbol
-      logger.debug "read symbol"
+      logger.debug "  read symbol"
       skip_whitespace
       r = ""
       while !empty? && (c = text[position]) =~ /[-a-zA-Z_0-9]/
         r << c
         increase
       end
-      logger.debug "resulting symbol: '#{r}'"
-      r.to_sym
+      s = STRING_TO_TOKEN[r]
+      s = r.to_sym unless s
+      logger.debug "  resulting symbol: #{s}"
+      s
     end
 
     def read_number
-      logger.debug "read number"
+      logger.debug "  read number"
       skip_whitespace
       r = ""
       while !empty? && (c = text[position]) =~ /[-0-9\.E]/
         r << c
         increase
       end
-      logger.debug "resulting number: '#{r}'"
+      logger.debug "  resulting number: '#{r}'"
       Integer(r)
     rescue
       Float(r)
