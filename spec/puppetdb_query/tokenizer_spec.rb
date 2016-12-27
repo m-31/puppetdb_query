@@ -4,31 +4,32 @@ require "spec_helper"
 describe PuppetDBQuery::Tokenizer do
   TOKENIZER_DATA = [
     [ 'hostname=\'puppetdb-mike-217922\'',
-      [:hostname, :equal, "puppetdb-mike-217922"]
+      [:hostname, :_equal, "puppetdb-mike-217922"]
     ],
     [ 'disable_puppet = true',
-      [:disable_puppet, :equal, :true]
+      [:disable_puppet, :_equal, :true]
     ],
     [ 'fqdn~"app-dev" and group=develop and vertical~tracking and cluster_color~BLUE',
-      [:fqdn, :match, "app-dev", :and, :group, :equal, :develop, :and, :vertical, :match,
-       :tracking, :and, :cluster_color, :match, :BLUE]
+      [:fqdn, :_match, "app-dev", :_and, :group, :_equal, :develop, :_and, :vertical, :_match,
+       :tracking, :_and, :cluster_color, :_match, :BLUE]
     ],
     [ 'fqdn~"kafka" and group=develop and vertical=tracking',
-      [:fqdn, :match, "kafka", :and, :group, :equal, :develop, :and, :vertical, :equal, :tracking]
+      [:fqdn, :_match, "kafka", :_and, :group, :_equal, :develop, :_and, :vertical, :_equal,
+       :tracking]
     ],
     [ '(group="develop-ci" or group=develop or group=mock) and (operatingsystemmajrelease="6")',
-      [:begin, :group, :equal, "develop-ci", :or, :group, :equal, :develop, :or, :group, :equal,
-       :mock, :end, :and, :begin, :operatingsystemmajrelease, :equal, "6", :end]
+      [:_begin, :group, :_equal, "develop-ci", :_or, :group, :_equal, :develop, :_or, :group,
+       :_equal, :mock, :_end, :_and, :_begin, :operatingsystemmajrelease, :_equal, "6", :_end]
     ],
     [ "server_type=zoo or server_type='mesos-magr') and group!='infrastructure-ci'",
-      [:server_type, :equal, :zoo, :or, :server_type, :equal, "mesos-magr", :end, :and, :group,
-       :not_equal, "infrastructure-ci"]
+      [:server_type, :_equal, :zoo, :_or, :server_type, :_equal, "mesos-magr", :_end, :_and,
+       :group, :_not_equal, "infrastructure-ci"]
     ],
     [ "server_type~'mesos-magr' and group='ops-ci' and operatingsystemmajrelease=7 and" \
       " vmtest_vm!=true and disable_puppet!=true and puppet_artifact_version!=NO_VERSION_CHECK",
-      [:server_type, :match, "mesos-magr", :and, :group, :equal, "ops-ci", :and,
-       :operatingsystemmajrelease, :equal, 7, :and, :vmtest_vm, :not_equal, :true, :and,
-       :disable_puppet, :not_equal, :true, :and, :puppet_artifact_version, :not_equal,
+      [:server_type, :_match, "mesos-magr", :_and, :group, :_equal, "ops-ci", :_and,
+       :operatingsystemmajrelease, :_equal, 7, :_and, :vmtest_vm, :_not_equal, :true, :_and,
+       :disable_puppet, :_not_equal, :true, :_and, :puppet_artifact_version, :_not_equal,
        :NO_VERSION_CHECK]
     ],
   ].freeze

@@ -27,7 +27,7 @@ describe PuppetDBQuery::ToMongo do
         ]
       }
     ],
-    [ '(group="develop-ci" or group=develop or group=mock) and (operatingsystemmajrelease="6")',
+    [ '(group="develop-ci" or group=develop or group=mock) and operatingsystemmajrelease="6"',
       { :$and => [
           { :$or => [
               { group: "develop-ci" },
@@ -39,10 +39,16 @@ describe PuppetDBQuery::ToMongo do
         ]
       }
     ],
-    [ "server_type=zoo or server_type='mesos-magr') and group!='infrastructure-ci'",
+    [ "server_type=zoo or server_type='mesos-magr' and group!='infrastructure-ci'",
       { :$or => [
           { server_type: "zoo" },
-          { server_type: "mesos-magr" }
+          { :$and => [
+               { server_type: "mesos-magr" },
+               { group:
+                   { :$ne => "infrastructure-ci" }
+               }
+            ]
+          }
         ]
       }
     ],
@@ -56,6 +62,11 @@ describe PuppetDBQuery::ToMongo do
           { disable_puppet: { :$ne => "true" } },
           { puppet_artifact_version: { :$ne => "NO_VERSION_CHECK" } }
         ]
+      }
+    ],
+    [ "server_type in [zoo, kafka]",
+      { server_type:
+          { :$in => [:zoo, :kafka] }
       }
     ],
   ].freeze

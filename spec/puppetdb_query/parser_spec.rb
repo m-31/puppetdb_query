@@ -4,7 +4,7 @@ require "spec_helper"
 # rubocop:disable Style/MultilineMethodCallIndentation,Style/RedundantParentheses
 # rubocop:disable Style/ClosingParenthesisIndentation
 describe PuppetDBQuery::Parser do
-  PARSER_DATA = [
+  CORRECT_PARSER_DATA = [
     [ 'hostname=\'puppetdb-mike-217922\'',
       [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:hostname, "puppetdb-mike-217922")]
     ],
@@ -32,9 +32,29 @@ describe PuppetDBQuery::Parser do
     ],
   ].freeze
 
-  PARSER_DATA.each do |q, a|
+  CORRECT_PARSER_DATA.each do |q, a|
     it "translates correctly #{q.inspect}" do
       expect(subject.parse(q)).to eq(a)
     end
+  end
+
+  it "complains about missing )" do
+    expect { subject.parse("a!=true and (b=false") }.to raise_error(/'\)' expected/)
+  end
+
+  it "complains about missing arguments for and" do
+    expect { subject.parse("a!=true and") }.to raise_error(/to few arguments for operator 'and'/)
+  end
+
+  it "complains about missing arguments for not" do
+    expect { subject.parse("not") }.to raise_error(/prefix operator 'not' got no argument/)
+  end
+
+  it "complains about closing bracket" do
+    expect { subject.parse(")") }.to raise_error(/that was not expected here: '\)'/)
+  end
+
+  it "complains about closing bracket 2" do
+    expect { subject.parse("not )") }.to raise_error(/that was not expected here: '\)'/)
   end
 end
