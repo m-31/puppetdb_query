@@ -18,7 +18,7 @@ module PuppetDBQuery
 
     private
 
-    # rubocop:disable Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
     def query_term(term)
       # rubocop:disable Style/GuardClause
       if term.is_a?(Symbol)
@@ -33,26 +33,28 @@ module PuppetDBQuery
       # rubocop:enable Style/GuardClause
       terms = term.args.map { |t| query_term(t) }
       case term.operator.symbol
-      when :and
+      when :_and
         { :$and => terms }
-      when :or
+      when :_or
         { :$or => terms }
-      when :not
+      when :_not
         # $not currently (<=2.5.1) only supports negating equality operators.
         # so you can do { field: { $not : { [$eq,$gt,$lt,...] } }
         # but there is no way to negate an entire expression.
         # see https://jira.mongodb.org/browse/SERVER-10708
         { :$nor => terms }
-      when :equal
+      when :_equal
         { term.args[0] => term.args[1].to_s }
-      when :not_equal
+      when :_not_equal
         { term.args[0] => { :$ne => term.args[1].to_s } }
-      when :match
+      when :_match
         { term.args[0] => { :$regex => term.args[1].to_s } }
+      when :_in
+        { term.args[0] => { :$in => term.args[1] } }
       else
         raise "can't handle operator '#{term.operator}' yet"
       end
     end
-    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
   end
 end
