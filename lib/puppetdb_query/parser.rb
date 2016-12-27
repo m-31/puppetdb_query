@@ -5,6 +5,7 @@ require_relative "logging"
 
 module PuppetDBQuery
   # parse a puppetdb query string into #PuppetDBQuery::Term s
+  # rubocop:disable Metrics/ClassLength
   class Parser
     include Logging
 
@@ -14,12 +15,13 @@ module PuppetDBQuery
 
     # these are the operators we understand
     # rubocop:disable Style/ExtraSpacing
-    AND       = Operator.new(:and,       true,  100, 2)
-    OR        = Operator.new(:or,        true,   90, 2)
-    NOT       = Operator.new(:not,       false, 150, 1, 1)
-    EQUAL     = Operator.new(:equal,     true,  200, 2, 2)
-    NOT_EQUAL = Operator.new(:not_equal, true,  200, 2, 2)
-    MATCH     = Operator.new(:match,     true,  200, 2, 2)
+    AND       = Operator.new(:_and,       true,  100, 2)
+    OR        = Operator.new(:_or,        true,   90, 2)
+    NOT       = Operator.new(:_not,       false, 150, 1, 1)
+    EQUAL     = Operator.new(:_equal,     true,  200, 2, 2)
+    NOT_EQUAL = Operator.new(:_not_equal, true,  200, 2, 2)
+    MATCH     = Operator.new(:_match,     true,  200, 2, 2)
+    IN        = Operator.new(:_in,        true,  200, 2, 2)
     # rubocop:enable Style/ExtraSpacing
 
     # map certain symbols (we get them from a tokenizer) to our operators
@@ -30,6 +32,7 @@ module PuppetDBQuery
       EQUAL.symbol     =>  EQUAL,
       NOT_EQUAL.symbol =>  NOT_EQUAL,
       MATCH.symbol     =>  MATCH,
+      IN.symbol        =>  IN,
     }.freeze
 
     attr_reader :symbols  # array of symbols
@@ -46,10 +49,11 @@ module PuppetDBQuery
 
     private
 
-    # Reads next maximal term. The following input doesn't make the term ore complete.
+    # Reads next maximal term. The following input doesn't make the term more complete.
     # Respects the priority of operators by comparing it to the given value.
     def read_maximal_term(priority)
       return nil if empty?
+      logger.debug "read maximal term (#{priority})"
       first = read_minimal_term
       term = add_next_infix_terms(priority, first)
       logger.debug "read maximal term: #{term}"
@@ -58,31 +62,55 @@ module PuppetDBQuery
 
     # Read next following term. This is a complete term but some infix operator
     # or some terms for an infix operator might follow.
-    # rubocop:disable Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/MethodLength
     def read_minimal_term
+      logger.debug "read minimal term"
       term = nil
       operator = get_operator
       if operator
         error("'#{operator}' is no prefix operator") unless operator.prefix?
         read_token
         term = Term.new(operator)
-        arg = read_maximal_term(operator.priority)
-        term.add(arg)
+        if operator.maximum > 1
+          error("'#{operator}' is prefix operator with more than one argument," \
+                " that is not supported yet")
+        end
+        if operator.minimum > 0
+          arg = read_maximal_term(operator.priority)
+          error("prefix operator '#{operator}' got no argument") if arg.nil?
+          term.add(arg)
+        end
         logger.debug "read_minimal_term: #{term}"
         return term
       end
       # no prefix operator found
       token = get_token
-      if token == :begin
+      if token == :_begin
+        logger.debug "read ()"
         read_token
         term = read_maximal_term(0)
-        error "'#{Tokenizer.symbol_to_string(:end)}' expected " unless read_token == :end
-      elsif token == :list_begin
+        error "'#{Tokenizer.symbol_to_string(:_end)}' expected " unless get_token == :_end
         read_token
-        term = read_maximal_term(0)
-        error "'#{Tokenizer.symbol_to_string(:list_end)}' expected " unless read_token == :list_end
+      elsif token == :_list_begin
+        logger.debug "read []"
+        read_token
+        args = []
+        loop do
+          term = read_maximal_term(0)
+          if get_token != :_list_end && get_token != :_comma
+            error "'#{Tokenizer.symbol_to_string(:_list_end)}' or" \
+                  " '#{Tokenizer.symbol_to_string(:_comma)}' expected"
+          end
+          args << term if term
+          break if read_token == :_list_end
+        end
+        term = args
       else
         error("no operator #{get_operator} expected here") if get_operator
+        if Tokenizer::LANGUAGE_STRINGS.include?(token) && ![:true, :false].include?(token)
+          error("that was not expected here: '#{Tokenizer.symbol_to_string(token)}'")
+        end
         token = read_token
         logger.debug "atom found: #{token}"
         term = token
@@ -90,7 +118,8 @@ module PuppetDBQuery
       logger.debug "read minimal term: #{term}"
       term
     end
-    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/MethodLength
 
     # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/MethodLength,Metrics/PerceivedComplexity
@@ -100,10 +129,14 @@ module PuppetDBQuery
       loop do
         # we expect an infix operator
         operator = get_operator
-        logger.debug "we found operator '#{operator}'" if operator
+        logger.debug "we found operator '#{operator}'" unless operator.nil?
         if operator.nil? || operator.prefix? || operator.priority <= priority
-          logger.debug "'#{operator}' is prefex '#{operator && operator.prefix?}' or has less" \
-                       " priority #{operator && operator.priority} than #{priority}"
+          logger.debug "operator '#{operator}' is nil" if operator.nil?
+          logger.debug "operator '#{operator}' is prefex" if !operator.nil? && operator.prefix?
+          if !operator.nil? && operator.priority <= priority
+            logger.debug "operator '#{operator}' has less priority #{operator.priority}" \
+                         " than #{priority}"
+          end
           logger.debug "get_next_infix_terms: #{term}"
           return term
         end
@@ -164,10 +197,11 @@ module PuppetDBQuery
     # rubocop:enable Style/AccessorMethodName
 
     def error(message)
-      length = Tokenizer.query(symbols[0..position]).size
+      length = (position > 0 ? Tokenizer.query(symbols[0..(position - 1)]).size + 1 : 0)
       raise "parsing query failed\n#{message}\n\n#{Tokenizer.query(symbols)}\n#{' ' * length}^"
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
 
 if $0 == __FILE__
