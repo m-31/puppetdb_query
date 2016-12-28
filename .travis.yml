@@ -10,10 +10,14 @@ rvm:
   - 2.2.6
   - 2.3.3
   - 2.4.0
+  - ruby-head
   - jruby-9.1.5.0
   - jruby-19mode
   - jruby-head
 matrix:
   fast_finish: true
   allow_failures:
-    - rvm: jruby-head
+    - rvm:
+        - jruby-head
+        - ruby-head
+
