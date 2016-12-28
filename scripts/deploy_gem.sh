@@ -39,7 +39,7 @@ function bump_version () {
 ## commit and push version, must be in main git directory
 function commit_and_push_version () {
   puts "commit and push ${application} gem version"
-  git add Gemfile.lock lib/${application}/version.rb
+  git add lib/${application}/version.rb
   git commit -m "m31's version bumper"
   git push
 }
