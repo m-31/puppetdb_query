@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.required_ruby_version = '>= 1.9.3'
   spec.require_paths = ["lib"]
   spec.post_install_message = "  Sitting quietly, doing nothing, spring comes, and grass grows by itself."
 

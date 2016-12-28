@@ -30,6 +30,11 @@ describe PuppetDBQuery::Parser do
          ))
       ]
     ],
+    [ 'type in [jenkins, mongo, tomcat]',
+      [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::IN)
+        .add(:type, [:jenkins, :mongo, :tomcat])
+      ]
+    ],
   ].freeze
 
   CORRECT_PARSER_DATA.each do |q, a|
