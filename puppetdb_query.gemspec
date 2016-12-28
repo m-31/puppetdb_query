@@ -20,8 +20,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.post_install_message = "  Sitting quietly, doing nothing, spring comes, and grass grows by itself."
 
-  spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rubocop" #, "0.43.0" # matches with .rubocop.yml
   spec.add_development_dependency "easy_diff"
 end
