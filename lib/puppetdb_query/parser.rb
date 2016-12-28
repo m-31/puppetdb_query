@@ -30,6 +30,7 @@ module PuppetDBQuery
       OR.symbol        =>  OR,
       NOT.symbol       =>  NOT,
       EQUAL.symbol     =>  EQUAL,
+      :is              =>  EQUAL,
       NOT_EQUAL.symbol =>  NOT_EQUAL,
       MATCH.symbol     =>  MATCH,
       IN.symbol        =>  IN,
@@ -108,7 +109,7 @@ module PuppetDBQuery
         term = args
       else
         error("no operator #{get_operator} expected here") if get_operator
-        if Tokenizer::LANGUAGE_STRINGS.include?(token) && ![:true, :false].include?(token)
+        if Tokenizer::LANGUAGE_STRINGS.include?(token) && ![:true, :false, :null].include?(token)
           error("that was not expected here: '#{Tokenizer.symbol_to_string(token)}'")
         end
         token = read_token
