@@ -121,7 +121,7 @@ module PuppetDBQuery
     # rubocop:enable Metrics/PerceivedComplexity,Metrics/AbcSize,Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/MethodLength
 
-    # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/BlockLength
     # rubocop:disable Metrics/MethodLength,Metrics/PerceivedComplexity
     def add_next_infix_terms(priority, first)
       old_operator = nil
@@ -169,7 +169,7 @@ module PuppetDBQuery
         old_operator = operator
       end
     end
-    # rubocop:enable Metrics/AbcSize,Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/BlockLength
     # rubocop:enable Metrics/MethodLength,Metrics/PerceivedComplexity
 
     # rubocop:disable Style/AccessorMethodName
