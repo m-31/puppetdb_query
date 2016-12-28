@@ -4,10 +4,10 @@ cache: bundler
 rvm:
   - 1.9.3
   - 2.0.0
-  - 2.1.9
-  - 2.2.5
-  - 2.3.1
-  - 2.4
+  - 2.1.10
+  - 2.2.6
+  - 2.3.3
+  - 2.4.0
   - jruby-19mode
   - jruby-head
   - rbx
@@ -18,3 +18,4 @@ matrix:
     - rvm: jruby-head
     - rvm: rbx
     - rvm: rbx-19mode
+    - rvm: 2.4.0
