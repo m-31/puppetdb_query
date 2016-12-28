@@ -12,6 +12,7 @@ readonly progname=$(basename $0)
 readonly script_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 readonly main_dir=$( cd "${script_dir}" && cd .. && pwd )
 readonly application=puppetdb_query
+readonly module=PuppetDBQuery
 
 #############################################################################
 ## functions
@@ -25,10 +26,10 @@ function puts () {
 function bump_version () {
   puts "bump ${application} gem version"
 
-  old_version=$( ruby -I lib/${application} -e 'require "version"; puts Gem::Version.new(Vampire::VERSION)')
+  old_version=$( ruby -I lib/${application} -e "require 'version'; puts Gem::Version.new(${module}::VERSION)" )
   puts "gem version currently:" ${old_version}
 
-  new_version=$( ruby -I lib/${application} -e 'require "version"; puts Gem::Version.new(Vampire::VERSION + ".1").bump' )
+  new_version=$( ruby -I lib/${application} -e "require 'version'; puts Gem::Version.new(${module}::VERSION + '.1').bump" )
   puts "we will change it into:" ${new_version}
 
   cat lib/${application}/version.rb | sed "s/$old_version/$new_version/" > lib/${application}/version.rb.new
