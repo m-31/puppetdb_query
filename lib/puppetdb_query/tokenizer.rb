@@ -142,7 +142,7 @@ module PuppetDBQuery
         r << c
         increase
       end
-      error("I expected '#{q}' but I got '#{c}'") if c != q
+      error("I expected #{q} but I got #{c}") if c != q
       increase
       logger.debug "  resulting string: '#{r}'"
       r
