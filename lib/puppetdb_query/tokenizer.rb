@@ -35,7 +35,7 @@ module PuppetDBQuery
       "and"   => :_and,
       "in"    => :_in,
       "is"    => :_is,
-      "null"  => :_null,
+      "null"  => :null,
       "true"  => :true,
       "false" => :false,
     }.freeze

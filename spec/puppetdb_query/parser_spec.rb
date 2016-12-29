@@ -35,6 +35,9 @@ describe PuppetDBQuery::Parser do
         .add(:type, [:jenkins, :mongo, :tomcat])
       ]
     ],
+    [ 'type is null',
+      [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:type, :null)]
+    ],
   ].freeze
 
   CORRECT_PARSER_DATA.each do |q, a|

@@ -30,7 +30,7 @@ module PuppetDBQuery
       OR.symbol        =>  OR,
       NOT.symbol       =>  NOT,
       EQUAL.symbol     =>  EQUAL,
-      :is              =>  EQUAL,
+      :_is             =>  EQUAL,
       NOT_EQUAL.symbol =>  NOT_EQUAL,
       MATCH.symbol     =>  MATCH,
       IN.symbol        =>  IN,
