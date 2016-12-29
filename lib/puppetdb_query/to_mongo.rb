@@ -18,7 +18,7 @@ module PuppetDBQuery
 
     private
 
-    # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity,Metrics/AbcSize
     def query_term(term)
       # rubocop:disable Style/GuardClause
       if term.is_a?(Symbol)
@@ -55,6 +55,6 @@ module PuppetDBQuery
         raise "can't handle operator '#{term.operator}' yet"
       end
     end
-    # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity,Metrics/AbcSize
   end
 end
