@@ -44,9 +44,9 @@ module PuppetDBQuery
         # see https://jira.mongodb.org/browse/SERVER-10708
         { :$nor => terms }
       when :_equal
-        { term.args[0] => term.args[1].to_s }
+        { term.args[0] => (term.args[1] != :null ? term.args[1].to_s : :null) }
       when :_not_equal
-        { term.args[0] => { :$ne => term.args[1].to_s } }
+        { term.args[0] => { :$ne => (term.args[1] != :null ? term.args[1].to_s : :null) } }
       when :_match
         { term.args[0] => { :$regex => term.args[1].to_s } }
       when :_in
