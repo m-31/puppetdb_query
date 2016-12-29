@@ -115,6 +115,7 @@ module PuppetDBQuery
       end
     end
 
+    # rubocop:disable Metrics/PerceivedComplexity,Style/ConditionalAssignment
     def read_quoted
       logger.debug "  read quoted"
       skip_whitespace
@@ -131,7 +132,11 @@ module PuppetDBQuery
           when 'n'
             c = "\n"
           when '\''
+            c = "\'"
+          when '\\'
             c = "\\"
+          else
+            c = "\\" + c
           end
         end
         r << c
@@ -142,6 +147,7 @@ module PuppetDBQuery
       logger.debug "  resulting string: '#{r}'"
       r
     end
+    # rubocop:enable Metrics/PerceivedComplexity,Style/ConditionalAssignment
 
     def read_symbol
       logger.debug "  read symbol"
