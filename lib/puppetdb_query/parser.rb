@@ -200,6 +200,9 @@ module PuppetDBQuery
     def error(message)
       length = (position > 0 ? Tokenizer.query(symbols[0..(position - 1)]).size + 1 : 0)
       raise "parsing query failed\n#{message}\n\n#{Tokenizer.query(symbols)}\n#{' ' * length}^"
+    rescue
+      logger.error $!
+      raise $!
     end
   end
   # rubocop:enable Metrics/ClassLength

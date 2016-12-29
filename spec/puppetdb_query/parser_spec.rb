@@ -38,6 +38,9 @@ describe PuppetDBQuery::Parser do
     [ 'type is null',
       [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:type, :null)]
     ],
+    [ '(type is null)',
+      [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:type, :null)]
+    ],
   ].freeze
 
   CORRECT_PARSER_DATA.each do |q, a|
