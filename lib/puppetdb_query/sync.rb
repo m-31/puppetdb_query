@@ -49,8 +49,8 @@ module PuppetDBQuery
 
     # this method is called
     def minutely
-      logger.info "node_properties update timestamp:" \
-                  " #{destination.node_properties_update_timestamp}"
+      ts = destination.node_properties_update_timestamp
+      logger.info "node_properties update timestamp: #{(ts.nil? ? '' : ts.iso8601)}"
     end
 
     private
@@ -61,6 +61,8 @@ module PuppetDBQuery
       return if timestamp - 60 < @last_minute
       minutely
       @last_minute = timestamp
+    rescue
+      logger.error $!
     end
   end
 end
