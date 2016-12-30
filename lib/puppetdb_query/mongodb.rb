@@ -133,13 +133,13 @@ module PuppetDBQuery
         {
           '$set' => {
             last_fact_update: {
-              ts_begin: ts_begin,
-              ts_end:   ts_end,
+              ts_begin: ts_begin.iso8601,
+              ts_end:   ts_end.iso8601,
               method:   method
             },
             method => {
-              ts_begin: ts_begin,
-              ts_end:   ts_end
+              ts_begin: ts_begin.iso8601,
+              ts_end:   ts_end.iso8601
             }
           }
         },
@@ -154,8 +154,8 @@ module PuppetDBQuery
         {
           '$set' => {
             last_node_properties_update: {
-              ts_begin: ts_begin,
-              ts_end:   ts_end
+              ts_begin: ts_begin.iso8601,
+              ts_end:   ts_end.iso8601
             }
           }
         },
