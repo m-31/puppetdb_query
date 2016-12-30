@@ -10,6 +10,7 @@ module PuppetDBQuery
     attr_reader :nodes_collection
     attr_reader :node_properties_collection
     attr_reader :meta_collection
+    attr_reader :node_properties_update_timestamp
 
     # initialize access to mongodb
     #
@@ -161,6 +162,7 @@ module PuppetDBQuery
         },
         { upsert: true }
       )
+      @node_properties_update_timestamp = ts_begin
     end
   end
 end

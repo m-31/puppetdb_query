@@ -16,7 +16,6 @@ module PuppetDBQuery
 
     def sync(minutes = 60, seconds = 10)
       logger.info "syncing puppetdb nodes and facts started, running #{minutes} minutes"
-
       Timeout.timeout(60 * minutes - seconds) do
         updater = PuppetDBQuery::Updater.new(source, destination)
 
@@ -27,6 +26,7 @@ module PuppetDBQuery
         # make delta updates til our time is up
         loop do
           begin
+            check_minutely
             ts = Time.now
             updater.update3(timestamp - 2)
             timestamp = ts
@@ -45,6 +45,22 @@ module PuppetDBQuery
       logger.info "syncing puppetdb nodes: now our time is up, we finsh"
     rescue
       logger.error $!
+    end
+
+    # this method is called
+    def minutely
+      logger.info "node_properties update timestamp:" \
+                  " #{destination.node_properties_update_timestamp}"
+    end
+
+    private
+
+    def check_minutely
+      @last_minute ||= Time.now - 60
+      timestamp = Time.now
+      return if timestamp - 60 < @last_minute
+      minutely
+      @last_minute = timestamp
     end
   end
 end
