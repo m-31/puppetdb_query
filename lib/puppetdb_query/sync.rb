@@ -8,6 +8,7 @@ module PuppetDBQuery
 
     attr_reader :source
     attr_reader :destination
+    attr_reader :updater
 
     def initialize(source, destination)
       @source = source
@@ -17,7 +18,7 @@ module PuppetDBQuery
     def sync(minutes = 60, seconds = 10)
       logger.info "syncing puppetdb nodes and facts started, running #{minutes} minutes"
       Timeout.timeout(60 * minutes - seconds) do
-        updater = PuppetDBQuery::Updater.new(source, destination)
+        @updater = PuppetDBQuery::Updater.new(source, destination)
 
         # make a full update
         timestamp = Time.now
@@ -50,8 +51,10 @@ module PuppetDBQuery
     # this method is called once in a minute at maximum
     # you may override this method to update you metrics...
     # @param ts Time from last node_properties update
-    def minutely(ts)
-      logger.info "node_properties update timestamp: #{(ts.nil? ? '' : ts.iso8601)}"
+    # @param node_number Integer number of nodes
+    def minutely(ts, node_number)
+      logger.info "node_properties update #{node_number} nodes" \
+        " at timestamp: #{(ts.nil? ? '' : ts.iso8601)}"
     end
 
     private
@@ -60,7 +63,8 @@ module PuppetDBQuery
       @last_minute ||= Time.now - 60
       timestamp = Time.now
       return if timestamp - 60 < @last_minute
-      minutely(destination.node_properties_update_timestamp)
+      minutely(destination.node_properties_update_timestamp,
+        updater.source_node_properties.size)
       @last_minute = timestamp
     rescue
       logger.error $!
