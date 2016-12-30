@@ -20,8 +20,6 @@ module PuppetDBQuery
       Timeout.timeout(60 * minutes - seconds) do
         updater = PuppetDBQuery::Updater.new(source, destination)
 
-        updater.update_node_properties
-
         # make a full update
         timestamp = Time.now
         updater.update2

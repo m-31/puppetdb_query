@@ -7,10 +7,12 @@ module PuppetDBQuery
 
     attr_reader :source
     attr_reader :destination
+    attr_reader :source_node_properties
 
     def initialize(source, destination)
       @source = source
       @destination = destination
+      @source_node_properties = {}
     end
 
     # update by deleting missing nodes and iterating over all nodes and
@@ -18,9 +20,10 @@ module PuppetDBQuery
     #
     # mongo: 1598 nodes in 63.46 seconds
     def update1
+      update_node_properties
       logger.info "update1 started (full update)"
       tsb = Time.now
-      source_nodes = source.nodes
+      source_nodes = source_node_properties.keys
       destination_nodes = destination.nodes
       delete_missing(destination_nodes, source_nodes)
       errors = false
@@ -42,9 +45,10 @@ module PuppetDBQuery
     #
     # mongo: 1597 nodes in 35.31 seconds
     def update2
+      update_node_properties
       logger.info "update2 started (full update)"
       tsb = Time.now
-      source_nodes = source.nodes
+      source_nodes = source_node_properties.keys
       destination_nodes = destination.nodes
       delete_missing(destination_nodes, source_nodes)
       errors = false
@@ -67,9 +71,10 @@ module PuppetDBQuery
     #
     # mongo: 56 nodes in 2.62 seconds
     def update3(last_update_timestamp)
+      update_node_properties
       logger.info "update3 started (incremental)"
       tsb = Time.now
-      source_nodes = source.nodes
+      source_nodes = source_node_properties.keys
       destination_nodes = destination.nodes
       delete_missing(destination_nodes, source_nodes)
       errors = false
@@ -93,10 +98,10 @@ module PuppetDBQuery
     def update_node_properties
       logger.info "update_node_properties started"
       tsb = Time.now
-      source_node_properties = source.node_properties
+      @source_node_properties = source.node_properties
       destination.node_properties_update(source_node_properties)
       tse = Time.now
-      logger.info "update_node_properties updated #{source_node_properties.size} nodes " \
+      logger.info "update_node_properties got #{source_node_properties.size} nodes " \
                   "in #{tse - tsb}"
       destination.meta_node_properties_update(tsb, tse)
     end
