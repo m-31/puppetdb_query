@@ -47,9 +47,10 @@ module PuppetDBQuery
       logger.error $!
     end
 
-    # this method is called
-    def minutely
-      ts = destination.node_properties_update_timestamp
+    # this method is called once in a minute at maximum
+    # you may override this method to update you metrics...
+    # @param ts Time from last node_properties update
+    def minutely(ts)
       logger.info "node_properties update timestamp: #{(ts.nil? ? '' : ts.iso8601)}"
     end
 
@@ -59,7 +60,7 @@ module PuppetDBQuery
       @last_minute ||= Time.now - 60
       timestamp = Time.now
       return if timestamp - 60 < @last_minute
-      minutely
+      minutely(destination.node_properties_update_timestamp)
       @last_minute = timestamp
     rescue
       logger.error $!
