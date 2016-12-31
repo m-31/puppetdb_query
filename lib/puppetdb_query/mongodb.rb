@@ -56,11 +56,11 @@ module PuppetDBQuery
         values.each do |k, v|
           if v =~ pattern
             found[k] = v
-          elsif check_names &&  k =~ pattern
+          elsif check_names && k =~ pattern
             found[k] = v
           end
         end
-        facts += found.keys
+        facts.concat(found.keys).uniq!
         result[id] = found unless found.empty?
       end
       result
