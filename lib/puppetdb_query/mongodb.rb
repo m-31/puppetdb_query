@@ -4,6 +4,7 @@ require_relative "logging"
 
 module PuppetDBQuery
   # access nodes and their facts from mongo database
+  # rubocop:disable Metrics/ClassLength
   class MongoDB
     include Logging
     attr_reader :connection
@@ -47,7 +48,12 @@ module PuppetDBQuery
     end
 
     # get nodes and their facts for a pattern
-    def search_facts(query, pattern, facts, check_names = false)
+    # @param query mongodb query
+    # @param pattern RegExp to search for
+    # @param facts Array get these values in the result, eg ['fqdn']
+    # @param facts_found Array fact names are added to this array
+    # @param check_names Boolean also search fact names
+    def search_facts(query, pattern, facts = [], facts_found = [], check_names = false)
       collection = connection[nodes_collection]
       result = {}
       collection.find(query).batch_size(999).each do |values|
@@ -60,8 +66,12 @@ module PuppetDBQuery
             found[k] = v
           end
         end
-        facts.concat(found.keys).uniq!
-        result[id] = found unless found.empty?
+        facts_found.concat(found.keys).uniq!
+        next if found.empty?
+        facts.each do |f|
+          found = values[f]
+        end
+        result[id] = found
       end
       result
     end
@@ -185,4 +195,5 @@ module PuppetDBQuery
       @node_properties_update_timestamp = ts_begin
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
