@@ -46,6 +46,26 @@ module PuppetDBQuery
       result
     end
 
+    # get nodes and their facts for a pattern
+    def search_facts(query, pattern, facts, check_names = false)
+      collection = connection[nodes_collection]
+      result = {}
+      collection.find(query).batch_size(999).each do |values|
+        id = values.delete('_id')
+        found = {}
+        values.each do |k, v|
+          if v =~ pattern
+            found[k] = v
+          elsif check_names &&  k =~ pattern
+            found[k] = v
+          end
+        end
+        facts += found.keys
+        result[id] = found unless found.empty?
+      end
+      result
+    end
+
     # get all node names
     def nodes
       collection = connection[nodes_collection]
