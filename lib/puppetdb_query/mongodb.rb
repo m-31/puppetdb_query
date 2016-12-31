@@ -69,7 +69,7 @@ module PuppetDBQuery
         facts_found.concat(found.keys).uniq!
         next if found.empty?
         facts.each do |f|
-          found = values[f]
+          found[f] = values[f]
         end
         result[id] = found
       end
