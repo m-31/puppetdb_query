@@ -74,7 +74,7 @@ module PuppetDBQuery
     #
     # @param query mongodb query
     # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
-    def query_facts_exists(query, facts = [])
+    def query_facts_exist(query, facts = [])
       result = query_facts(query, facts)
       unless facts.empty?
         result.keep_if do |_k, v|
