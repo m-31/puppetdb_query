@@ -2,7 +2,7 @@ require "spec_helper"
 
 # rubocop:disable Style/SpaceInsideBrackets,Style/MultilineArrayBraceLayout
 # rubocop:disable Style/MultilineMethodCallIndentation,Style/RedundantParentheses
-# rubocop:disable Style/ClosingParenthesisIndentation
+# rubocop:disable Style/ClosingParenthesisIndentation,Metrics/BlockLength
 describe PuppetDBQuery::Parser do
   CORRECT_PARSER_DATA = [
     [ 'hostname=\'puppetdb-mike-217922\'',

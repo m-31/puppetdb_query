@@ -1,7 +1,7 @@
 require "spec_helper"
 
 # rubocop:disable Style/SpaceInsideBrackets,Style/MultilineArrayBraceLayout,Style/IndentArray
-# rubocop:disable Style/MultilineHashBraceLayout
+# rubocop:disable Style/MultilineHashBraceLayout,Metrics/BlockLength
 describe PuppetDBQuery::ToMongo do
   TO_MONGO_DATA = [
     [ "hostname='puppetdb-mike-217922'",

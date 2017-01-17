@@ -1,6 +1,7 @@
 require "spec_helper"
 
 # rubocop:disable Style/SpaceInsideBrackets,Style/MultilineArrayBraceLayout
+# rubocop:disable Metrics/BlockLength
 describe PuppetDBQuery::Tokenizer do
   TOKENIZER_DATA = [
     [ 'hostname=\'puppetdb-mike-217922\'',
