@@ -9,8 +9,11 @@ module PuppetDBQuery
     def query(string)
       logger.info "transfer following string into mongo query:"
       logger.info(string)
-      terms = Parser.parse(string)
-      mongo_query = query_term(terms[0])
+      mongo_query = nil
+      unless string.nil? || string.strip.empty?
+        terms = Parser.parse(string)
+        mongo_query = query_term(terms[0])
+      end
       logger.info "resulting mongo query:"
       logger.info mongo_query.inspect
       mongo_query
