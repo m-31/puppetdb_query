@@ -19,9 +19,7 @@ module PuppetDBQuery
 
     # get array of node names
     def nodes
-      # TODO: perhaps we have to ignore entries without "deactivated": null?
-      # in '/v3/nodes' we must take 'name'
-      api_nodes.map { |data| data['certname'] }
+      api_nodes.reject { |data| data['deactivated'] }.map { |data| data['certname'] }
     end
 
     # get hash of node update properties

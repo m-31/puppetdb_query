@@ -29,14 +29,36 @@ module PuppetDBQuery
       @meta_collection = meta
     end
 
+    # get all nodes and their update dates
+    def node_properties
+      collection = connection[node_properties_collection]
+      result = {}
+      collection.find.batch_size(999).each do |values|
+        id = values.delete('_id')
+        result[id] = values
+      end
+      result
+    end
+
+    # get all node names
+    def all_nodes
+      collection = connection[nodes_collection]
+      collection.find.batch_size(999).projection(_id: 1).map { |k| k[:_id] }
+    end
+
     # get node names that fulfill given mongodb query
+    #
+    # @param query mongodb query
     def query_nodes(query)
       collection = connection[nodes_collection]
       collection.find(query).batch_size(999).projection(_id: 1).map { |k| k[:_id] }
     end
 
     # get nodes and their facts that fulfill given mongodb query
-    def query_facts(query, facts)
+    #
+    # @param query mongodb query
+    # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
+    def query_facts(query, facts = [])
       fields = Hash[facts.collect { |fact| [fact.to_sym, 1] }]
       collection = connection[nodes_collection]
       result = {}
@@ -48,11 +70,12 @@ module PuppetDBQuery
     end
 
     # get nodes and their facts for a pattern
+    #
     # @param query mongodb query
-    # @param pattern RegExp to search for
-    # @param facts Array get these values in the result, eg ['fqdn']
-    # @param facts_found Array fact names are added to this array
-    # @param check_names Boolean also search fact names
+    # @param pattern [RegExp] search for
+    # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
+    # @param facts_found [Array<String>] fact names are added to this array
+    # @param check_names [Boolean] also search fact names
     def search_facts(query, pattern, facts = [], facts_found = [], check_names = false)
       collection = connection[nodes_collection]
       result = {}
@@ -76,36 +99,26 @@ module PuppetDBQuery
       result
     end
 
-    # get all node names
-    def nodes
-      collection = connection[nodes_collection]
-      collection.find.batch_size(999).projection(_id: 1).map { |k| k[:_id] }
-    end
-
-    # get all nodes and their update dates
-    def node_properties
-      collection = connection[node_properties_collection]
-      result = {}
-      collection.find.batch_size(999).each do |values|
-        id = values.delete('_id')
-        result[id] = values
-      end
-      result
-    end
-
     # get facts for given node name
-    def node_facts(node)
+    #
+    # @param node [String] node name
+    # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
+    def single_node_facts(node, facts)
+      fields = Hash[facts.collect { |fact| [fact.to_sym, 1] }]
       collection = connection[nodes_collection]
-      result = collection.find(_id: node).limit(1).batch_size(1).to_a.first
+      result = collection.find(_id: node).limit(1).batch_size(1).projection(fields).to_a.first
       result.delete("_id") if result
       result
     end
 
     # get all nodes and their facts
-    def facts
+    #
+    # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
+    def facts(facts = [])
+      fields = Hash[facts.collect { |fact| [fact.to_sym, 1] }]
       collection = connection[nodes_collection]
       result = {}
-      collection.find.batch_size(999).each do |values|
+      collection.find.batch_size(999).projection(fields).each do |values|
         id = values.delete('_id')
         result[id] = values
       end
@@ -121,6 +134,9 @@ module PuppetDBQuery
     end
 
     # update or insert facts for given node name
+    #
+    # @param node [String] node name
+    # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
     def node_update(node, facts)
       connection[nodes_collection].find(_id: node).replace_one(facts, upsert: true)
     rescue ::Mongo::Error::OperationFailure => e
@@ -134,6 +150,8 @@ module PuppetDBQuery
     end
 
     # delete node data for given node name
+    #
+    # @param node [String] node name
     def node_delete(node)
       connection[nodes_collection].find(_id: node).delete_one
     end
