@@ -49,7 +49,7 @@ module PuppetDBQuery
       logger.info "update2 started (full update)"
       tsb = Time.now
       source_nodes = source_node_properties.keys
-      destination_nodes = destination.nodes
+      destination_nodes = destination.all_nodes
       delete_missing(destination_nodes, source_nodes)
       errors = false
       complete = source.facts
@@ -75,7 +75,7 @@ module PuppetDBQuery
       logger.info "update3 started (incremental)"
       tsb = Time.now
       source_nodes = source_node_properties.keys
-      destination_nodes = destination.nodes
+      destination_nodes = destination.all_nodes
       delete_missing(destination_nodes, source_nodes)
       errors = false
       modified = source.nodes_update_facts_since(last_update_timestamp)
