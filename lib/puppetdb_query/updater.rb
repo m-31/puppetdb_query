@@ -24,12 +24,12 @@ module PuppetDBQuery
       logger.info "update1 started (full update)"
       tsb = Time.now
       source_nodes = source_node_properties.keys
-      destination_nodes = destination.nodes
+      destination_nodes = destination.all_nodes
       delete_missing(destination_nodes, source_nodes)
       errors = false
       source_nodes.each do |node|
         begin
-          destination.node_update(node, source.node_facts(node))
+          destination.node_update(node, source.single_node_facts(node))
         rescue
           errors = true
           logging.error $!
@@ -81,7 +81,7 @@ module PuppetDBQuery
       modified = source.nodes_update_facts_since(last_update_timestamp)
       modified.each do |node|
         begin
-          destination.node_update(node, source.node_facts(node))
+          destination.node_update(node, source.single_node_facts(node))
         rescue
           errors = true
           logging.error $!

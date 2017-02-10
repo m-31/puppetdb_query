@@ -18,7 +18,7 @@ module PuppetDBQuery
     end
 
     # get array of node names
-    def nodes
+    def all_nodes
       api_nodes.reject { |data| data['deactivated'] }.map { |data| data['certname'] }
     end
 
@@ -46,7 +46,7 @@ module PuppetDBQuery
     end
 
     # get hash of facts for given node name
-    def node_facts(node)
+    def single_node_facts(node)
       json = get_json("#{@nodes_url}/#{node}/facts", 10)
       return nil if json.include?("error")
       Hash[json.map { |data| [data["name"], data["value"]] }]
