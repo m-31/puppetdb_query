@@ -32,7 +32,7 @@ module PuppetDBQuery
             updater.update3(timestamp - seconds_back)
             timestamp = ts
           rescue Timeout::Error
-            logger.info "syncing puppetdb nodes: now our time is up, we finsh"
+            logger.info "syncing puppetdb nodes: now our time is up, we finish"
             return
           rescue
             logger.error $!

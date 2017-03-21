@@ -153,7 +153,7 @@ module PuppetDBQuery
     # @param node [String] node name
     # @param facts [Array<String>] get these facts in the result, eg ['fqdn'], empty for all
     def node_update(node, facts)
-      connection[nodes_collection].find(_id: node).replace_one(facts, upsert: true)
+      connection[nodes_collection].find(_id: node).replace_one(facts, upsert: true, bypass_document_validation: false,  check_keys: false)
     rescue ::Mongo::Error::OperationFailure => e
       # mongodb doesn't support keys with a dot
       # see https://docs.mongodb.com/manual/reference/limits/#Restrictions-on-Field-Names
@@ -161,7 +161,7 @@ module PuppetDBQuery
       # The dotted field .. in .. is not valid for storage. (57)
       raise e unless e.message =~ /The dotted field /
       connection[nodes_collection].find(_id: node).delete_one
-      connection[nodes_collection].insert_one(facts.merge(_id: node))
+      connection[nodes_collection].insert_one(facts.merge(_id: node), check_keys: false)
     end
 
     # delete node data for given node name
