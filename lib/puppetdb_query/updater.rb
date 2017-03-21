@@ -3,7 +3,7 @@ require_relative "logging"
 module PuppetDBQuery
   # update nodes data from source to destination
   class Updater
-    include logging
+    include Logging
 
     attr_reader :source
     attr_reader :destination
