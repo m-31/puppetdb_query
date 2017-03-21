@@ -176,10 +176,11 @@ module PuppetDBQuery
       # The dotted field .. in .. is not valid for storage. (57)
       # .. is an illegal key in MongoDB. Keys may not start with '$' or contain a '.'. (BSON::String::IllegalKey)
       raise e unless (e.message =~ /The dotted field / || e.message =~ /is an illegal key/)
-      logger.warn "    we try again deleting and inserting the node"
+      # logger.warn "    we try again deleting and inserting the node"
+      logger.warn "    we try again update the node"
       begin
-        connection[nodes_collection].find(_id: node).delete_one
-        connection[nodes_collection].insert_one(facts.merge(_id: node),
+        # connection[nodes_collection].find(_id: node).delete_one
+        connection[nodes_collection].update_one(facts.merge(_id: node), upsert: true,
           bypass_document_validation: true, check_keys: false, validating_keys: false)
       rescue
         logger.error "  updating #{node} failed with: #{e.message}"
