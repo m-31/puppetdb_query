@@ -1,4 +1,4 @@
-require_relative "logger"
+require_relative "logging"
 
 module PuppetDBQuery
   # update nodes data from source to destination
