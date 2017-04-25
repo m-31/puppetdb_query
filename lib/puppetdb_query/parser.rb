@@ -15,25 +15,33 @@ module PuppetDBQuery
 
     # these are the operators we understand
     # rubocop:disable Style/ExtraSpacing
-    AND       = Operator.new(:_and,       true,  100, 2)
-    OR        = Operator.new(:_or,        true,   90, 2)
-    NOT       = Operator.new(:_not,       false, 150, 1, 1)
-    EQUAL     = Operator.new(:_equal,     true,  200, 2, 2)
-    NOT_EQUAL = Operator.new(:_not_equal, true,  200, 2, 2)
-    MATCH     = Operator.new(:_match,     true,  200, 2, 2)
-    IN        = Operator.new(:_in,        true,  200, 2, 2)
+    AND              = Operator.new(:_and,              true,  100, 2)
+    OR               = Operator.new(:_or,               true,   90, 2)
+    NOT              = Operator.new(:_not,              false, 150, 1, 1)
+    EQUAL            = Operator.new(:_equal,            true,  200, 2, 2)
+    NOT_EQUAL        = Operator.new(:_not_equal,        true,  200, 2, 2)
+    LESS             = Operator.new(:_less,             true,  190, 2, 2)
+    LESS_OR_EQUAL    = Operator.new(:_less_or_equal,    true,  190, 2, 2)
+    GREATER          = Operator.new(:_greater,          true,  190, 2, 2)
+    GREATER_OR_EQUAL = Operator.new(:_greater_or_equal, true,  190, 2, 2)
+    MATCH            = Operator.new(:_match,            true,  200, 2, 2)
+    IN               = Operator.new(:_in,               true,  200, 2, 2)
     # rubocop:enable Style/ExtraSpacing
 
     # map certain symbols (we get them from a tokenizer) to our operators
     OPERATORS = {
-      AND.symbol       =>  AND,
-      OR.symbol        =>  OR,
-      NOT.symbol       =>  NOT,
-      EQUAL.symbol     =>  EQUAL,
-      :_is             =>  EQUAL,
-      NOT_EQUAL.symbol =>  NOT_EQUAL,
-      MATCH.symbol     =>  MATCH,
-      IN.symbol        =>  IN,
+      AND.symbol              =>  AND,
+      OR.symbol               =>  OR,
+      NOT.symbol              =>  NOT,
+      EQUAL.symbol            =>  EQUAL,
+      :_is                    =>  EQUAL,
+      NOT_EQUAL.symbol        =>  NOT_EQUAL,
+      MATCH.symbol            =>  MATCH,
+      IN.symbol               =>  IN,
+      LESS.symbol             =>  LESS,
+      LESS_OR_EQUAL.symbol    =>  LESS_OR_EQUAL,
+      GREATER.symbol          =>  GREATER,
+      GREATER_OR_EQUAL.symbol =>  GREATER_OR_EQUAL,
     }.freeze
 
     attr_reader :symbols  # array of symbols

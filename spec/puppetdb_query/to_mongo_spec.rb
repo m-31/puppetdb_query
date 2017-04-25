@@ -69,6 +69,11 @@ describe PuppetDBQuery::ToMongo do
           { :$in => [:zoo, :kafka] }
       }
     ],
+    [ "operatingsystemmajrelease>6",
+      { operatingsystemmajrelease:
+          { :$gt => 6 },
+      }
+    ],
   ].freeze
 
   TO_MONGO_DATA.each do |q, a|

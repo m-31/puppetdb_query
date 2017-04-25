@@ -22,14 +22,15 @@ module PuppetDBQuery
     private
 
     # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity,Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def query_term(term)
       # rubocop:disable Style/GuardClause
       if term.is_a?(Symbol)
         return term.to_s
       elsif term.is_a?(Integer)
-        return "'#{term}'"
+        return term
       elsif term.is_a?(TrueClass)
-        return term.to_s
+        return term
       elsif !term.is_a?(Term)
         return "'#{term}'"
       end
@@ -54,10 +55,19 @@ module PuppetDBQuery
         { term.args[0] => { :$regex => term.args[1].to_s } }
       when :_in
         { term.args[0] => { :$in => term.args[1] } }
+      when :_greater
+        { term.args[0] => { :$gt => term.args[1] } }
+      when :_greater_or_equal
+        { term.args[0] => { :$gte => term.args[1] } }
+      when :_less
+        { term.args[0] => { :$lt => term.args[1] } }
+      when :_less_or_equal
+        { term.args[0] => { :$lte => term.args[1] } }
       else
         raise "can't handle operator '#{term.operator}' yet"
       end
     end
     # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity,Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
   end
 end
