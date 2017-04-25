@@ -3,9 +3,11 @@ require 'time'
 require_relative "logging"
 
 # monkey patch mongodb to get rid of
-# ".. is an illegal key in MongoDB. Keys may not start with '$' or contain a '.'. (BSON::String::IllegalKey)"
+# ".. is an illegal key in MongoDB.
+# Keys may not start with '$' or contain a '.'. (BSON::String::IllegalKey)"
 module Mongo
   module Protocol
+    # fool the monkey
     class Message
       def validating_keys?
         false
@@ -166,21 +168,28 @@ module PuppetDBQuery
     # @param facts [Hash] facts for the node
     def node_update(node, facts)
       logger.debug "  updating #{node}"
-      connection[nodes_collection].find(_id: node).replace_one(facts, upsert: true,
-        bypass_document_validation: true, check_keys: false, validating_keys: false)
+      connection[nodes_collection].find(_id: node).replace_one(facts,
+        upsert: true,
+        bypass_document_validation: true,
+        check_keys: false,
+        validating_keys: false)
     rescue ::Mongo::Error::OperationFailure => e
       logger.warn "  updating #{node} failed with: #{e.message}"
       # mongodb doesn't support keys with a dot
       # see https://docs.mongodb.com/manual/reference/limits/#Restrictions-on-Field-Names
       # as a dirty workaround we delete the document and insert it ;-)
       # The dotted field .. in .. is not valid for storage. (57)
-      # .. is an illegal key in MongoDB. Keys may not start with '$' or contain a '.'. (BSON::String::IllegalKey)
-      raise e unless (e.message =~ /The dotted field / || e.message =~ /is an illegal key/)
-      logger.warn "    we try again deleting and inserting the node"
+      # .. is an illegal key in MongoDB. Keys may not start with '$' or contain a '.'.
+      # (BSON::String::IllegalKey)
+      raise e unless e.message =~ /The dotted field / || e.message =~ /is an illegal key/
+      logger.warn "    we transform the dots into underline characters"
       begin
-        connection[nodes_collection].find(_id: node).delete_one
-        connection[nodes_collection].insert_one(facts.merge(_id: node),
-          bypass_document_validation: true, check_keys: false, validating_keys: false)
+        facts = Hash[facts.map { |k, v| [k.tr('.', '_'), v] }]
+        connection[nodes_collection].find(_id: node).replace_one(facts,
+          upsert: true,
+          bypass_document_validation: true,
+          check_keys: false,
+          validating_keys: false)
       rescue
         logger.error "  inserting node #{node} failed again with: #{e.message}"
       end
