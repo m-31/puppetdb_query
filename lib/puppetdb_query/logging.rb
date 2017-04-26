@@ -17,7 +17,6 @@ module PuppetDBQuery
 
     # addition
     def self.included(base)
-      # rubocop:disable Lint/NestedMethodDefinition
       class << base
         def logger
           # :nocov:
@@ -31,7 +30,6 @@ module PuppetDBQuery
           # :nocov:
         end
       end
-      # rubocop:enable Lint/NestedMethodDefinition
     end
 
     def logger

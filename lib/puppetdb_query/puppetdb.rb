@@ -30,7 +30,7 @@ module PuppetDBQuery
         # in '/v3/nodes' we must take 'name'
         name = data['certname']
         values = data.dup
-        %w(deactivated certname).each { |key| values.delete(key) }
+        %w[deactivated certname].each { |key| values.delete(key) }
         result[name] = values
       end
       result

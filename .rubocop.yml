@@ -14,9 +14,9 @@ AllCops:
     - 'bundle/**/*'
     - 'local-gems/**/*'
     - '**/*.sh'
-    - '**/Gemfile'
     - 'tester.rb'
     - 'test/**/*'
+    - 'toaster.rb'
 
 # --- XXXLength-Section --------------------------------------------------------------------
 # too long lines, methods and classes are annoying,
@@ -50,7 +50,7 @@ Documentation:
 
 # check filename conventions
 FileName:
-  Enabled: true
+  Enabled: false
 
 # this 3-digit thing for portnumbers? oh, come on!
 NumericLiterals:
@@ -72,7 +72,11 @@ Style/BracesAroundHashParameters:
 Style/EachWithObject:
   Enabled: false
 
-# we now the special global variables by heart
+# we don't want be forced to use %i
+Style/SymbolArray:
+  Enabled: false
+
+# we know the special global variables by heart
 Style/SpecialGlobalVars:
   Enabled: false
 

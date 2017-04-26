@@ -15,5 +15,4 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.pattern = 'spec/**/*_spec.rb'
 end
 
-task :default => ["spec", "rubocop"]
-
+task default: %w[spec rubocop]
