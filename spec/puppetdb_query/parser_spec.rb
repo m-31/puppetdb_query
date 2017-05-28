@@ -9,7 +9,7 @@ describe PuppetDBQuery::Parser do
       [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:hostname, "puppetdb-mike-217922")]
     ],
     [ 'disable_puppet = true',
-      [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:disable_puppet, :true)]
+      [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::EQUAL).add(:disable_puppet, true)]
     ],
     [ 'fqdn~"app-dev" and group=develop and vertical~tracking and cluster_color~BLUE',
       [PuppetDBQuery::Term.new(PuppetDBQuery::Parser::AND)

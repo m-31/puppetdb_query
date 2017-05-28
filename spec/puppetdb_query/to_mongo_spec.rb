@@ -8,7 +8,7 @@ describe PuppetDBQuery::ToMongo do
       { hostname: "puppetdb-mike-217922" }
     ],
     [ 'disable_puppet = true',
-      { disable_puppet: "true" }
+      { disable_puppet: true }
     ],
     [ 'fqdn~"app-dev" and group=develop and vertical~tracking and cluster_color~BLUE',
       { :$and => [
@@ -27,7 +27,7 @@ describe PuppetDBQuery::ToMongo do
         ]
       }
     ],
-    [ '(group="develop-ci" or group=develop or group=mock) and operatingsystemmajrelease="6"',
+    [ '(group="develop-ci" or group=develop or group=mock) and operatingsystemmajrelease=6',
       { :$and => [
           { :$or => [
               { group: "develop-ci" },
@@ -35,7 +35,7 @@ describe PuppetDBQuery::ToMongo do
               { group: "mock" }
             ]
           },
-          { operatingsystemmajrelease: "6" }
+          { operatingsystemmajrelease: 6 }
         ]
       }
     ],
@@ -57,9 +57,9 @@ describe PuppetDBQuery::ToMongo do
       { :$and => [
           { server_type: { :$regex => "mesos-magr" } },
           { group: "ops-ci" },
-          { operatingsystemmajrelease: "7" },
-          { vmtest_vm: { :$ne => "true" } },
-          { disable_puppet: { :$ne => "true" } },
+          { operatingsystemmajrelease: 7 },
+          { vmtest_vm: { :$ne => true } },
+          { disable_puppet: { :$ne => true } },
           { puppet_artifact_version: { :$ne => "NO_VERSION_CHECK" } }
         ]
       }

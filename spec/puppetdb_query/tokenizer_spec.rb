@@ -8,7 +8,7 @@ describe PuppetDBQuery::Tokenizer do
       [:hostname, :_equal, "puppetdb-mike-217922"]
     ],
     [ 'disable_puppet = true',
-      [:disable_puppet, :_equal, :true]
+      [:disable_puppet, :_equal, true]
     ],
     [ 'fqdn~"app-dev" and group=develop and vertical~tracking and cluster_color~BLUE',
       [:fqdn, :_match, "app-dev", :_and, :group, :_equal, :develop, :_and, :vertical, :_match,
@@ -29,8 +29,8 @@ describe PuppetDBQuery::Tokenizer do
     [ "server_type~'mesos-magr' and group='ops-ci' and operatingsystemmajrelease=7 and" \
       " vmtest_vm!=true and disable_puppet!=true and puppet_artifact_version!=NO_VERSION_CHECK",
       [:server_type, :_match, "mesos-magr", :_and, :group, :_equal, "ops-ci", :_and,
-       :operatingsystemmajrelease, :_equal, 7, :_and, :vmtest_vm, :_not_equal, :true, :_and,
-       :disable_puppet, :_not_equal, :true, :_and, :puppet_artifact_version, :_not_equal,
+       :operatingsystemmajrelease, :_equal, 7, :_and, :vmtest_vm, :_not_equal, true, :_and,
+       :disable_puppet, :_not_equal, true, :_and, :puppet_artifact_version, :_not_equal,
        :NO_VERSION_CHECK]
     ],
   ].freeze

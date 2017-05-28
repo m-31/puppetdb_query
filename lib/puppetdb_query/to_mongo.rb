@@ -48,9 +48,9 @@ module PuppetDBQuery
         # see https://jira.mongodb.org/browse/SERVER-10708
         { :$nor => terms }
       when :_equal
-        { term.args[0] => (term.args[1] != :null ? term.args[1].to_s : :null) }
+        { term.args[0] => stringify(term.args[1]) }
       when :_not_equal
-        { term.args[0] => { :$ne => (term.args[1] != :null ? term.args[1].to_s : :null) } }
+        { term.args[0] => { :$ne => stringify(term.args[1]) } }
       when :_match
         { term.args[0] => { :$regex => term.args[1].to_s } }
       when :_in
@@ -69,5 +69,11 @@ module PuppetDBQuery
     end
     # rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity,Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
+
+    def stringify(value)
+      return value if value == :null
+      return value.to_s if value.is_a?(Symbol)
+      value
+    end
   end
 end

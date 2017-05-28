@@ -159,6 +159,8 @@ module PuppetDBQuery
       end
       s = STRING_TO_TOKEN[r]
       s = r.to_sym unless s
+      s = true if s == :true
+      s = false if s == :false
       logger.debug "  resulting symbol: #{s}"
       s
     end
