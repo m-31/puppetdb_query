@@ -71,7 +71,7 @@ module PuppetDBQuery
     # rubocop:enable Metrics/MethodLength
 
     def stringify(value)
-      return value if value == :null
+      return nil if value == :null
       return value.to_s if value.is_a?(Symbol)
       value
     end
