@@ -215,18 +215,3 @@ module PuppetDBQuery
   end
   # rubocop:enable Metrics/ClassLength
 end
-
-if $0 == __FILE__
-  require "pp"
-  query = "facts=-7.4E1 and fucts=8 and fits=true or application_vertical='ops' and" \
-          " (application_group=\"live\"or application_group='prelive-production')"
-  puts query
-  query = PuppetDBQuery::Tokenizer.idem(query)
-  puts query
-  query = PuppetDBQuery::Tokenizer.idem(query)
-  puts query
-
-  parser = PuppetDBQuery::Parser.new
-  tree = parser.parse(query)
-  pp tree
-end
